@@ -113,7 +113,7 @@ namespace OneNotePageSearcher
             var resultList = new List<Tuple<string, string, float>>();
 
             Console.WriteLine("Found {0} results", results);
-            for (var i = 0; i < results; i++)
+            for (var i = 0; i < results && i< _searchLimit; i++)
             {
                 var doc = searcher.Doc(hits.ScoreDocs[i].Doc);
                 var score = hits.ScoreDocs[i].Score;

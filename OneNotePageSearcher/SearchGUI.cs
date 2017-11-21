@@ -10,7 +10,6 @@ namespace OneNotePageSearcher
     public partial class SearchGUI : Form
     {
         DataTable resultTable = new DataTable();
-        NetLuceneProvider lucene = new NetLuceneProvider();
         List<Tuple<string, string, float>> resList;
         OneNotePageIndexer oneNotePageIndexer = new OneNotePageIndexer();
 
@@ -29,7 +28,8 @@ namespace OneNotePageSearcher
             resultTable.Columns.Add(new DataColumn("Content", typeof(string)));
             resultTable.Columns.Add(new DataColumn("Score", typeof(float)));
             resultTable.Columns.Add(new DataColumn("Source", typeof(string)));
-            ResultGridView.DataSource = resultTable;
+            resultGridView.DataSource = resultTable;
+            resultGridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void InitializeBackgroundWorker()
@@ -55,7 +55,7 @@ namespace OneNotePageSearcher
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            progressBar1.Value = e.ProgressPercentage;
+            indexProgressBar.Value = e.ProgressPercentage;
         }
 
         private void DoWork(object sender, DoWorkEventArgs e)
@@ -141,14 +141,16 @@ namespace OneNotePageSearcher
 
         private void SearchButtonClick(object sender, EventArgs e)
         {
-            resList = lucene.Search(queryBox.Text);
+            Console.WriteLine("Query: "+queryBox.Text);
+            resList = oneNotePageIndexer.Search(queryBox.Text);
+
             resultTable.Rows.Clear();
             for (var i = 0; i < 20 && i < resList.Count; i++)
             {
                 // TODO Add Page Title into index
                 resultTable.Rows.Add(resList[i].Item2, resList[i].Item3, oneNotePageIndexer.GetPageTitle(resList[i].Item1));
             }
-            ResultGridView.Show();
+            resultGridView.Show();
         }
 
         public static void Main(string[] args)
@@ -159,16 +161,28 @@ namespace OneNotePageSearcher
 
         private void IndexButtonClick(object sender, EventArgs e)
         {
-            progressBar1.Show();
+            indexProgressBar.Show();
             etaLabel.Show();
             progressLabel.Show();
             backgroundWorker.RunWorkerAsync();
 
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void ExitButtonClick(object sender, EventArgs e)
         {
+            if (MessageBox.Show("This will close down the whole application. Confirm?", "Close Application", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+        }
 
+        private void QueryBoxKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                //Do something
+                SearchButtonClick(sender, e);
+            }
         }
     }
 }

@@ -22,9 +22,15 @@ namespace OneNotePageSearcher
 
         public string currentPageTitle = "";
 
+        public XDocument allPageInfo;
+
         public OneNotePageIndexer()
         {
             lucene = new NetLuceneProvider();
+
+            string outputXML;
+            oneNote.GetHierarchy(null, HierarchyScope.hsPages, out outputXML);
+            allPageInfo = XDocument.Parse(outputXML);
         }
 
         /// <summary>
@@ -103,11 +109,11 @@ namespace OneNotePageSearcher
         public string GetPageTitle(string id)
         {
             var pageId = id.Split(' ')[1];
-            string outXML;
-            oneNote.GetPageContent(pageId, out outXML);
-            var info = XDocument.Parse(outXML);
-            var page = info.Descendants(One + "Page").First();
-            return page.Attribute("name").Value;
+            IEnumerable<XElement> pages=
+                (from el in allPageInfo.Descendants(One+"Page")
+                 where el.Attribute("ID").Value == pageId
+                 select el);
+            return pages.First().Attribute("name").Value;
         }
 
         public void Main()
