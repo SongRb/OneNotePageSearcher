@@ -11,8 +11,10 @@ Please download latest release file and unzip it. Then click `setup.exe` to inst
 ## First start
 You can find this application in Start menu. Click to launch. You will see a simple user interface.
 Click `Index` button and wait, it will index all page content for you.
-![Alt text](docs/images/index.jpg?raw=true "Title")
+
+![Alt text](docs/images/Index.jpg "Title")
 ## Search
 After finish indexing, type anything you want in search box and click `Search` button. It will accept your query and return top 10 relevant paragraph.
-![Alt text](docs/images/search.jpg?raw=true "Title")
+
+![Alt text](docs/images/Search.jpg "Title")  
 You can navigate to page where the paragraph from, just double click the row. The target page will display in OneNote.
