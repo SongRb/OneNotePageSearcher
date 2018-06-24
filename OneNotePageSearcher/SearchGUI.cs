@@ -11,13 +11,13 @@ namespace OneNotePageSearcher
     {
         DataTable resultTable = new DataTable();
         List<Tuple<string, string, float>> resList;
-        OneNotePageIndexer oneNotePageIndexer = new OneNotePageIndexer();
+        OneNoteManager oneNotePageIndexer;
 
         BackgroundWorker backgroundWorker;
 
-        public SearchGUI()
+        public SearchGUI(bool isDebug)
         {
-            //oneNotePageIndexer.Main();
+            oneNotePageIndexer = new OneNoteManager(isDebug);
             InitializeComponent();
             InitializeResultGridView();
             InitializeBackgroundWorker();
@@ -50,7 +50,7 @@ namespace OneNotePageSearcher
 
         private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            MessageBox.Show("HHHHHHHHH");
+            return;
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -65,23 +65,19 @@ namespace OneNotePageSearcher
                 {
                     oneNotePageIndexer.BuildIndex();
                 }
-
             ));
             Thread guiThread = new Thread(
                 new ThreadStart(() =>
                 {
-
                     var watch = System.Diagnostics.Stopwatch.StartNew();
-                    // the code that you want to measure comes here
 
                     var elapsedMs = watch.ElapsedMilliseconds;
                     while (true)
                     {
-                        Thread.Sleep(2000);
-                        //int i = (int)oneNotePageIndexer.progressRate * 1000;
+                        Thread.Sleep(100);
                         double tmp = oneNotePageIndexer.progressRate + 0.0001;
                         int i = (int)(tmp * 100);
-                        //MessageBox.Show(i.ToString());
+
                         if (i == 100) break;
 
                         var eta = (watch.ElapsedMilliseconds - elapsedMs) * (1 - tmp) / tmp;
@@ -96,28 +92,28 @@ namespace OneNotePageSearcher
                             etaLabel.Text = "Remaining Time: " + Math.Round(eta / 1000, 2, MidpointRounding.AwayFromZero) + "s";
                         }));
 
-
-                        // Periodically report progress to the main thread so that it can
-                        // update the UI.  In most cases you'll just need to send an
-                        // integer that will update a ProgressBar
                         backgroundWorker.ReportProgress(i);
-                        // Periodically check if a cancellation request is pending.
-                        // If the user clicks cancel the line
-                        // m_AsyncWorker.CancelAsync(); if ran above.  This
-                        // sets the CancellationPending to true.
-                        // You must check this flag in here and react to it.
-                        // We react to it by setting e.Cancel to true and leaving
+
                         if (backgroundWorker.CancellationPending)
                         {
-                            // Set the e.Cancel flag so that the WorkerCompleted event
-                            // knows that the process was cancelled.
                             e.Cancel = true;
                             backgroundWorker.ReportProgress(0);
                             return;
                         }
                     }
                     watch.Stop();
-
+                    progressLabel.Invoke((MethodInvoker)(() =>
+                    {
+                        progressLabel.Text = "Finshed!";
+                    }));
+                    etaLabel.Invoke((MethodInvoker)(() =>
+                    {
+                        etaLabel.Text = "";
+                    }));
+                    indexProgressBar.Invoke((MethodInvoker)(() =>
+                    {
+                        indexProgressBar.Hide();
+                    }));
                     MessageBox.Show("Full text search index successfully built!");
                 }
             ));
@@ -129,7 +125,7 @@ namespace OneNotePageSearcher
             backgroundWorker.ReportProgress(100);
         }
 
-        private void ResultGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void ResultGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             oneNotePageIndexer.OpenPage(resList[e.RowIndex].Item1);
         }
@@ -141,6 +137,8 @@ namespace OneNotePageSearcher
 
         private void SearchButtonClick(object sender, EventArgs e)
         {
+            progressLabel.Visible = false;
+            etaLabel.Visible = false;
             Console.WriteLine("Query: "+queryBox.Text);
             resList = oneNotePageIndexer.Search(queryBox.Text);
 
@@ -148,15 +146,17 @@ namespace OneNotePageSearcher
             for (var i = 0; i < 20 && i < resList.Count; i++)
             {
                 // TODO Add Page Title into index
-                resultTable.Rows.Add(resList[i].Item2, resList[i].Item3, oneNotePageIndexer.GetPageTitle(resList[i].Item1));
+                resultTable.Rows.Add(resList[i].Item2.Substring(0,Math.Min(10, resList[i].Item2.Length)), resList[i].Item3, oneNotePageIndexer.GetPageTitle(resList[i].Item1));
             }
             resultGridView.Show();
         }
 
         public static void Main(string[] args)
         {
-            System.Windows.Forms.Application.EnableVisualStyles();
-            System.Windows.Forms.Application.Run(new SearchGUI());
+            Application.EnableVisualStyles();
+            bool isDebug = false;
+            if(args.Length==1) isDebug = true;
+            Application.Run(new SearchGUI(isDebug));
         }
 
         private void IndexButtonClick(object sender, EventArgs e)
@@ -165,7 +165,8 @@ namespace OneNotePageSearcher
             etaLabel.Show();
             progressLabel.Show();
             backgroundWorker.RunWorkerAsync();
-
+            progressLabel.Text = "Finished";
+            etaLabel.Text = "";
         }
 
         private void ExitButtonClick(object sender, EventArgs e)
@@ -186,3 +187,4 @@ namespace OneNotePageSearcher
         }
     }
 }
+

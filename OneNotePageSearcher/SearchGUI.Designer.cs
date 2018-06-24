@@ -110,16 +110,16 @@ namespace OneNotePageSearcher
             this.etaLabel.Location = new System.Drawing.Point(18, 104);
             this.etaLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.etaLabel.Name = "etaLabel";
-            this.etaLabel.Size = new System.Drawing.Size(51, 16);
+            this.etaLabel.Size = new System.Drawing.Size(123, 16);
             this.etaLabel.TabIndex = 9;
-            this.etaLabel.Text = "ETA: ∞ ";
+            this.etaLabel.Text = "Remaining Time: ∞ ";
             this.etaLabel.Visible = false;
             // 
             // progressLabel
             // 
             this.progressLabel.AutoSize = true;
             this.progressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.progressLabel.Location = new System.Drawing.Point(16, 62);
+            this.progressLabel.Location = new System.Drawing.Point(18, 61);
             this.progressLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.progressLabel.Name = "progressLabel";
             this.progressLabel.Size = new System.Drawing.Size(74, 16);
@@ -150,6 +150,7 @@ namespace OneNotePageSearcher
             this.resultGridView.Size = new System.Drawing.Size(592, 263);
             this.resultGridView.TabIndex = 3;
             this.resultGridView.Visible = false;
+            this.resultGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ResultGridView_CellContentDoubleClick);
             // 
             // exitButton
             // 
@@ -183,8 +184,11 @@ namespace OneNotePageSearcher
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
             this.Name = "SearchGUI";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Search OneNote Content";
+            this.TopMost = true;
             this.inputField.ResumeLayout(false);
             this.inputField.PerformLayout();
             this.outputField.ResumeLayout(false);

@@ -17,23 +17,40 @@ namespace OneNotePageSearcher
 
         private Microsoft.Office.Interop.OneNote.Application oneNote = new Microsoft.Office.Interop.OneNote.Application();
 
-        public double progressRate=0;
+        public double progressRate = 0;
         double count = 0;
         double totalCount = 0;
 
         public bool canceled = false;
-
+        public bool isDebug = false;
         public string currentPageTitle = "";
+        string sampleNotebookUrl = null;
 
         public XDocument allPageInfo;
 
-        public OneNoteManager()
+        public OneNoteManager(bool isDebug)
         {
+            this.isDebug = isDebug;
             lucene = new NetLuceneProvider(false);
-
+            lucene.debug = this.isDebug;
+            
             string outputXML;
-            oneNote.GetHierarchy(null, HierarchyScope.hsPages, out outputXML);
+            if(this.isDebug) sampleNotebookUrl = "{E9ACF59B-250A-0A88-1083-AD27FB56155D}{1}{B0}";
+            oneNote.GetHierarchy(sampleNotebookUrl, HierarchyScope.hsPages, out outputXML);
             allPageInfo = XDocument.Parse(outputXML);
+        }
+
+
+        public void BuildIndex()
+        {
+            progressRate = 0;
+            string outputXML;
+            oneNote.GetHierarchy(sampleNotebookUrl, HierarchyScope.hsPages, out outputXML);
+            lucene.SetWorkingDirectory();
+            lucene.SetUpWriter(true);
+            BuildIndex(outputXML);
+            //BuildIndexByTime();
+            lucene.CloseWriter();
         }
 
         /// <summary>
@@ -44,7 +61,6 @@ namespace OneNotePageSearcher
         {
             var info = XDocument.Parse(outputXML);
             var pageList = info.Descendants(One + "Page");
-
             AddIndex(pageList);
         }
 
@@ -53,16 +69,16 @@ namespace OneNotePageSearcher
             HashSet<String> deletedID;
             HashSet<String> updatedID;
             GetUpdateIndexID(out deletedID, out updatedID);
-            Console.WriteLine("Begining Index Process...");
-            foreach(var id in deletedID)
+            if (isDebug) Console.WriteLine("Begining Index Process...");
+            foreach (var id in deletedID)
             {
-                Console.WriteLine("Deleting: " + id);
+                if (isDebug) Console.WriteLine("Deleting: " + id);
                 lucene.DeleteDocumentByID(id);
             }
 
             foreach (var id in updatedID)
             {
-                Console.WriteLine("Adding: " + id);
+                if (isDebug) Console.WriteLine("Adding: " + id);
                 lucene.DeleteDocumentByID(id);
                 string xmlString;
                 try
@@ -74,21 +90,16 @@ namespace OneNotePageSearcher
                 catch (System.Runtime.InteropServices.COMException e)
                 {
                     int code = e.HResult;
-                    Console.WriteLine("Exception: Error Code is " + code);
+                    if (isDebug) Console.WriteLine("Exception: Error Code is " + code);
                 }
 
             }
-
-
-
-
-
         }
 
         private void AddIndex(IEnumerable<XElement> pageList)
         {
             totalCount = pageList.Count();
-            Console.WriteLine("All Count: " + totalCount);
+            if (isDebug) Console.WriteLine("All Count: " + totalCount);
 
             foreach (var n in pageList)
             {
@@ -96,21 +107,21 @@ namespace OneNotePageSearcher
                 progressRate = count / totalCount;
                 currentPageTitle = n.Attribute("name").Value;
                 //string title = currentPageTitle;
-                Console.Write("Adding " + currentPageTitle);
+                if (isDebug) Console.Write("Adding " + currentPageTitle);
                 var pageID = n.Attribute("ID").Value;
-                Console.WriteLine(pageID);
+                if (isDebug) Console.WriteLine(pageID);
                 string xmlString;
                 try
                 {
                     oneNote.GetPageContent(pageID, out xmlString);
                     var doc = XDocument.Parse(xmlString);
-                    //IndexByParagraph(pageID, doc);
-                    IndexByDocument(pageID, doc);
+                    IndexByParagraph(pageID, doc);
+                    //IndexByDocument(pageID, doc);
                 }
                 catch (System.Runtime.InteropServices.COMException e)
                 {
                     int code = e.HResult;
-                    Console.WriteLine("Exception: Error Code is " + code);
+                    if(isDebug) Console.WriteLine("Exception: Error Code is " + code);
                 }
 
             }
@@ -119,12 +130,12 @@ namespace OneNotePageSearcher
         private void IndexByParagraph(string pageID, XDocument doc)
         {
             var des = doc.Descendants(One + "OE");
-            Console.WriteLine("\t" + des.Count() + " Paragraphs");
+            if(isDebug) Console.WriteLine("\t" + des.Count() + " Paragraphs");
 
             var documentList = new List<Tuple<string, string>>();
             // Index title as a paragraph
             int paragraphCount = des.Count();
-            if(paragraphCount>0)
+            if (paragraphCount > 0)
             {
                 foreach (var el in des)
                 {
@@ -134,7 +145,6 @@ namespace OneNotePageSearcher
                     if (parId == null || text == null) continue;
                     var id = pageID + " " + parId.Value;
                     var par = RemoveUnwantedTags(text.Value);
-                    //Console.WriteLine(id + "\t" + par + "\n");
                     documentList.Add(new Tuple<string, string>(id, par));
                 }
             }
@@ -163,28 +173,19 @@ namespace OneNotePageSearcher
                     var altAttr = image.Attribute("alt");
                     if (altAttr == null) continue;
                     text = altAttr.Value;
-                    //Console.WriteLine(text);
                 }
                 else
                 {
                     text = textNode.Value;
                 }
-                sb.AppendLine(text);
+                var tmp = RemoveUnwantedTags(text.ToString());
+                using (StreamWriter w = File.AppendText("log.txt"))
+                {
+                    Log(tmp, w);
+                }
+                sb.AppendLine(tmp);
             }
-            lucene.AddDocument(new Tuple<string,string>(pageID, RemoveUnwantedTags(sb.ToString())));
-        }
-
-        public void BuildIndex()
-        {
-            progressRate = 0;
-            string outputXML;
-            oneNote.GetHierarchy(null, HierarchyScope.hsPages, out outputXML);
-            lucene.SetWorkingDirectory();
-            lucene.SetUpWriter(false);
-            //outputXML = System.IO.File.ReadAllText(@"D:\\Sample.xml");
-            //BuildIndex(outputXML);
-            BuildIndexByTime();
-            lucene.CloseWriter();
+            lucene.AddDocument(new Tuple<string, string>(pageID, sb.ToString()));
         }
 
         public List<Tuple<string, string, float>> Search(string query)
@@ -200,7 +201,7 @@ namespace OneNotePageSearcher
         {
             var idList = id.Split(' ');
 
-            if(idList.Length==1)
+            if (idList.Length == 1)
             {
                 oneNote.NavigateTo(idList[0]);
             }
@@ -208,7 +209,6 @@ namespace OneNotePageSearcher
             {
                 oneNote.NavigateTo(idList[0], idList[1]);
             }
-
         }
 
         /// <summary>
@@ -217,18 +217,19 @@ namespace OneNotePageSearcher
         public string GetPageTitle(string id)
         {
             var pageId = id.Split(' ')[0];
-            IEnumerable<XElement> pages=
-                (from el in allPageInfo.Descendants(One+"Page")
+            IEnumerable<XElement> pages =
+                (from el in allPageInfo.Descendants(One + "Page")
                  where el.Attribute("ID").Value == pageId
                  select el);
-            return pages.First().Attribute("name").Value;
+            if (pages.Any()) return pages.First().Attribute("name").Value;
+            else return "Default Title";
         }
 
         public HashSet<String> GetAllPageId()
         {
             var pageList = allPageInfo.Descendants(One + "Page");
             var idSet = new HashSet<String>();
-            foreach(var n in pageList)
+            foreach (var n in pageList)
             {
                 idSet.Add(n.Attribute("ID").Value);
             }
@@ -252,26 +253,26 @@ namespace OneNotePageSearcher
 
             var pageList = allPageInfo.Descendants(One + "page");
 
-            foreach(var n in legacyID)
+            foreach (var n in legacyID)
             {
                 legacyPageID.Add(n.Split(' ')[0]);
             }
             // We want to find page that is already deleted
             foreach (var id in legacyID)
             {
-                if(!currentID.Contains(id))
+                if (!currentID.Contains(id))
                 {
                     indexIDToDelete.Add(id);
                 }
             }
 
             // We also want to find page that is updated and created
-            string oldTime= "2017-11-18T08:56:47.000Z";
+            string oldTime = "2017-11-18T08:56:47.000Z";
             //var indexIDToCreate = new HashSet<String>();
             foreach (var n in pageList)
             {
                 // Last Modified Time older than index time
-                if(CompareTimeByString(n.Attribute("lastModifiedTime").Value, oldTime))
+                if (CompareTimeByString(n.Attribute("lastModifiedTime").Value, oldTime))
                 {
                     indexIDToCreate.Add(n.Attribute("ID").Value);
                 }
@@ -327,6 +328,11 @@ namespace OneNotePageSearcher
             }
 
 
+        }
+
+        public static void Log(string logMessage, TextWriter w)
+        {
+            w.WriteLine(logMessage);
         }
     }
 }

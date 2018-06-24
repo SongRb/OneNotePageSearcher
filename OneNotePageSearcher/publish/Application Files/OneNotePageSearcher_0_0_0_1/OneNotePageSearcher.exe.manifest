@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="OneNotePageSearcher.exe" version="0.0.0.1" publicKeyToken="16804c01d71d72d4" language="neutral" processorArchitecture="msil" type="win32" />
+  <description asmv2:iconFile="favicon.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="OneNotePageSearcher" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="OneNotePageSearcher.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!--
+          UAC Manifest Options
+          If you want to change the Windows User Account Control level replace the 
+          requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+         If you want to utilize File and Registry Virtualization for backward 
+         compatibility then delete the requestedExecutionLevel node.
+    -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="HtmlAgilityPack.dll" size="143872">
+      <assemblyIdentity name="HtmlAgilityPack" version="1.6.5.0" publicKeyToken="BD319B19EAF3B43A" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>A8L13HwXVPfmOC0ray7//IK2wPK2ruOQmvosRKMR16s=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ICSharpCode.SharpZipLib.dll" size="200704">
+      <assemblyIdentity name="ICSharpCode.SharpZipLib" version="0.86.0.518" publicKeyToken="1B03E6ACF1164F73" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>QLPVkPlRkfPjPl0A5TT6QPgj2bG7Kpr+BfE5xOCjr40=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Lucene.Net.dll" size="753664">
+      <assemblyIdentity name="Lucene.Net" version="3.0.3.0" publicKeyToken="85089178B9AC3181" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>0+N051wzOR59WhJ+IaYD8pJB9sOsNbT1dm6hSrSai9o=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.Office.Interop.OneNote.dll" size="55944">
+      <assemblyIdentity name="Microsoft.Office.Interop.OneNote" version="15.0.0.0" publicKeyToken="71E9BCE111E9429C" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>JXsEK7qzhAbLcg+5sidYKLADxr4VkzInzqxo4IuEZBI=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OneNotePageSearcher.exe" size="320464">
+      <assemblyIdentity name="OneNotePageSearcher" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>MzlBWqt5YTHV0UJLRgMUsitWsrG/iq8VSS3uN0lzqkc=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="favicon.ico" size="110758">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>6bV7c961p9a5YXHixCRwcN+z99ClIlF/5E/nU3VebkA=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="OneNotePageSearcher.exe.config" size="187">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>xm4bo26HQ0LNVwz1vdPYtzhkpMnp2AI5i+f0b+OahTI=</dsig:DigestValue>
+    </hash>
+  </file>
+<publisherIdentity name="CN=DESKTOP-TANG\22871" issuerKeyHash="88c8595d4e528a9a58da179ae9d7392b1d359f0c" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>I0mucuOyC7nDZBJHkSRkbFGOgPNYqnIIBvqBxnHFTMw=</DigestValue></Reference></SignedInfo><SignatureValue>NNesTkXPaYi7JUrWMSk1NCD98ynDaL5iZS+KG+iTxF8KynJCqABQ2EAGZ5ZZAHY51R5RyQaq6OpXtkpXMcl39lrDBLRIaQSJs0ZEbJluJloSb9+1a9fR8SrWMtY7HrYxQQsqzNBRfBNrdHR3syL39xvjwt5eQ5GNiUTuq+Egyeo=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>xG4B/8FnH9+XRl0+6xx+VDJQjhJVyuyE7kS9Hafly52GWzS8VT8KxyQmn7GMY3AdWpVXFrQTSMD5oVNiLSTysbI0ThJtOx0n3MG+rk9EndqHFI3ZPCbGy7n8Dk6QE3422ehT6v90XII53XNFcr2cxGin+bE/8cVZRuOuKUjlQ+k=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="cc4cc571c681fa060872aa58f3808e516c642491471264c3b90bb2e372ae4923" Description="" Url=""><as:assemblyIdentity name="OneNotePageSearcher.exe" version="0.0.0.1" publicKeyToken="16804c01d71d72d4" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=DESKTOP-TANG\22871</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>Y2Rx5Uqi896jA6A7p+qv4WBlQQiNa4VHZ1Jq/QDCjjU=</DigestValue></Reference></SignedInfo><SignatureValue>GAIW/OXOPpUFiV4gbH1+WD1he0czfHqv7mIgcNMGgQNZlUxeAOmuGi7iBcB3TEtzmTNIj0z6T+bKmgfhLnQQViA67Qgx2Nigg/SfrhwYqtUdDeGP6yCu3/k84jZB4wWpgjQ1gf+RqVn4zvnHxIUprFneIOGeGjKRJeL71+swQnY=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>xG4B/8FnH9+XRl0+6xx+VDJQjhJVyuyE7kS9Hafly52GWzS8VT8KxyQmn7GMY3AdWpVXFrQTSMD5oVNiLSTysbI0ThJtOx0n3MG+rk9EndqHFI3ZPCbGy7n8Dk6QE3422ehT6v90XII53XNFcr2cxGin+bE/8cVZRuOuKUjlQ+k=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB4TCCAUqgAwIBAgIQWfGdvQrti7JAt23keFOFqDANBgkqhkiG9w0BAQsFADAvMS0wKwYDVQQDHiQARABFAFMASwBUAE8AUAAtAFQAQQBOAEcAXAAyADIAOAA3ADEwHhcNMTgwNjI0MTEyNjMxWhcNMTkwNjI0MTcyNjMxWjAvMS0wKwYDVQQDHiQARABFAFMASwBUAE8AUAAtAFQAQQBOAEcAXAAyADIAOAA3ADEwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAMRuAf/BZx/fl0ZdPuscflQyUI4SVcrshO5EvR2n5cudhls0vFU/CsckJp+xjGNwHVqVVxa0E0jA+aFTYi0k8rGyNE4SbTsdJ9zBvq5PRJ3ahxSN2Twmxsu5/A5OkBN+NtnoU+r/dFyCOd1zRXK9nMRop/mxP/HFWUbjrilI5UPpAgMBAAEwDQYJKoZIhvcNAQELBQADgYEAL/FB2BZN9L9stOGA4UR/pz9GSEwebvXc5faCrDqu+I5L1bB0dHQ76aA/JNIab+cUuDFee8kdNFS7BUwkCv36QcczTqUPSO2HlXKREJopUj5/Qv9rTsLKEU1n5ACXy/XAPMDW/W23DQVHdFEOb1ZNyyPs+IFOyNsosrg6bAz6LGM=</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
