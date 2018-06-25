@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2FC14A32-269D-44BE-8868-D4D3C76F1570}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>OneNotePageSearcher</RootNamespace>
     <AssemblyName>OneNotePageSearcher</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>

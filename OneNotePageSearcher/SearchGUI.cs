@@ -10,7 +10,7 @@ namespace OneNotePageSearcher
     public partial class SearchGUI : Form
     {
         DataTable resultTable = new DataTable();
-        List<Tuple<string, string, float>> resList;
+        List<Tuple<string, string,string, float>> resList;
         OneNoteManager oneNotePageIndexer;
 
         BackgroundWorker backgroundWorker;
@@ -121,13 +121,12 @@ namespace OneNotePageSearcher
             guiThread.Start();
             backgroundThread.Join();
             guiThread.Join();
-            //Report 100% completion on operation completed
             backgroundWorker.ReportProgress(100);
         }
 
         private void ResultGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            oneNotePageIndexer.OpenPage(resList[e.RowIndex].Item1);
+            oneNotePageIndexer.OpenPage(resList[e.RowIndex].Item1, resList[e.RowIndex].Item2);
         }
 
         public void CreateNewRow()
@@ -146,7 +145,7 @@ namespace OneNotePageSearcher
             for (var i = 0; i < 20 && i < resList.Count; i++)
             {
                 // TODO Add Page Title into index
-                resultTable.Rows.Add(resList[i].Item2.Substring(0,Math.Min(10, resList[i].Item2.Length)), resList[i].Item3, oneNotePageIndexer.GetPageTitle(resList[i].Item1));
+                resultTable.Rows.Add(resList[i].Item3.Substring(0,Math.Min(10, resList[i].Item3.Length)), resList[i].Item4, oneNotePageIndexer.GetPageTitle(resList[i].Item1));
             }
             resultGridView.Show();
         }

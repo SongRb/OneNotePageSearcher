@@ -57,28 +57,27 @@ namespace OneNotePageSearcher
         public void CloseWriter()
         {
             writer.Optimize();
-            //Close the writer
             writer.Flush(true, true, true);
             writer.Dispose();
             indexDirectory.Dispose();
         }
 
-        public void AddDocumentList(List<Tuple<string, string>> documentList)
+        public void AddDocumentList(List<Tuple<string, string,string>> documentList)
         {
             foreach (var docPair in documentList)
             {
-                AddTextToIndex(docPair.Item1, docPair.Item2);
+                AddTextToIndex(docPair.Item1, docPair.Item2, docPair.Item3);
             }
         }
 
-        public void AddDocument(Tuple<string,string> doc)
+        public void AddDocument(Tuple<string,string,string> doc)
         {
-            AddTextToIndex(doc.Item1, doc.Item2);
+            AddTextToIndex(doc.Item1, doc.Item2, doc.Item3);
         }
 
         public void DeleteDocumentByID(string id)
         {
-            writer.DeleteDocuments(new Term("id", id));
+            writer.DeleteDocuments(new Term("pageID", id));
         }
 
         public HashSet<String> GetAllValuesByField(string field_name)
@@ -105,7 +104,7 @@ namespace OneNotePageSearcher
             if (debug) Console.Read();
         }
 
-        public List<Tuple<string, string, float>> Search(string q)
+        public List<Tuple<string, string, string,float>> Search(string q)
         {
             //Setup searcher
             //Directory directory = FSDirectory.Open(_indexPath);
@@ -122,7 +121,7 @@ namespace OneNotePageSearcher
 
             var results = hits.TotalHits;
 
-            var resultList = new List<Tuple<string, string, float>>();
+            var resultList = new List<Tuple<string, string, string, float>>();
 
             if (debug) Console.WriteLine("Found {0} results", results);
             for (var i = 0; i < results && i< _searchLimit; i++)
@@ -130,8 +129,8 @@ namespace OneNotePageSearcher
                 var doc = searcher.Doc(hits.ScoreDocs[i].Doc);
                 var score = hits.ScoreDocs[i].Score;
 
-                resultList.Add(new Tuple<string, string, float>(
-                    doc.Get("id"), doc.Get("postBody"), score
+                resultList.Add(new Tuple<string, string, string, float>(
+                    doc.Get("pageID"), doc.Get("paraID"), doc.Get("postBody"), score
                     ));
             }
 
@@ -142,10 +141,11 @@ namespace OneNotePageSearcher
             return resultList;
         }
 
-        private void AddTextToIndex(string id, string text)
+        private void AddTextToIndex(string pageID,string paraID, string text)
         {
             var doc = new Document();
-            doc.Add(new Field("id", id, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            doc.Add(new Field("pageID", pageID, Field.Store.YES, Field.Index.NOT_ANALYZED));
+            doc.Add(new Field("paraID", paraID, Field.Store.YES, Field.Index.NOT_ANALYZED));
             doc.Add(new Field("postBody", text, Field.Store.YES, Field.Index.ANALYZED));
             writer.AddDocument(doc);
         }
