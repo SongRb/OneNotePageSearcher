@@ -10,14 +10,14 @@ namespace OneNotePageSearcher
     public partial class SearchGUI : Form
     {
         DataTable resultTable = new DataTable();
-        List<Tuple<string, string,string, float>> resList;
-        OneNoteManager oneNotePageIndexer;
+        List<Tuple<string, string, string, float>> resList;
+        OneNoteManager oneNoteManager;
 
-        BackgroundWorker backgroundWorker;
+        BackgroundWorker bgWorker;
 
         public SearchGUI(bool isDebug)
         {
-            oneNotePageIndexer = new OneNoteManager(isDebug);
+            oneNoteManager = new OneNoteManager(isDebug);
             InitializeComponent();
             InitializeResultGridView();
             InitializeBackgroundWorker();
@@ -34,23 +34,22 @@ namespace OneNotePageSearcher
 
         private void InitializeBackgroundWorker()
         {
-            backgroundWorker = new BackgroundWorker();
+            bgWorker = new BackgroundWorker();
 
             // Create a background worker thread that ReportsProgress &
             // SupportsCancellation
             // Hook up the appropriate events.
-            backgroundWorker.DoWork += new DoWorkEventHandler(DoWork);
-            backgroundWorker.ProgressChanged += new ProgressChangedEventHandler
-                    (ProgressChanged);
-            backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler
-                    (WorkerCompleted);
-            backgroundWorker.WorkerReportsProgress = true;
-            backgroundWorker.WorkerSupportsCancellation = true;
+            bgWorker.DoWork += DoWork;
+            bgWorker.ProgressChanged += ProgressChanged;
+            bgWorker.RunWorkerCompleted += WorkerCompleted;
+            bgWorker.WorkerReportsProgress = true;
+            bgWorker.WorkerSupportsCancellation = true;
         }
 
         private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            return;
+            MessageBox.Show("Full text search index successfully built!");
+            bgWorker.CancelAsync();
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -60,31 +59,32 @@ namespace OneNotePageSearcher
 
         private void DoWork(object sender, DoWorkEventArgs e)
         {
+            BackgroundWorker backgroundWorker = sender as BackgroundWorker;
             Thread backgroundThread = new Thread(
                 new ThreadStart(() =>
                 {
-                    oneNotePageIndexer.BuildIndex();
+                    oneNoteManager.BuildIndex();
                 }
             ));
             Thread guiThread = new Thread(
                 new ThreadStart(() =>
                 {
                     var watch = System.Diagnostics.Stopwatch.StartNew();
-
                     var elapsedMs = watch.ElapsedMilliseconds;
                     while (true)
                     {
                         Thread.Sleep(100);
-                        double tmp = oneNotePageIndexer.progressRate + 0.0001;
+                        double tmp = oneNoteManager.progressRate + 0.0001;
                         int i = (int)(tmp * 100);
 
                         if (i == 100) break;
 
                         var eta = (watch.ElapsedMilliseconds - elapsedMs) * (1 - tmp) / tmp;
-
+                        if (!oneNoteManager.isIndexing) elapsedMs = watch.ElapsedMilliseconds;
                         progressLabel.Invoke((MethodInvoker)(() =>
                         {
-                            progressLabel.Text = "Adding " + oneNotePageIndexer.currentPageTitle;
+                            if (oneNoteManager.isIndexing) progressLabel.Text = "Adding " + oneNoteManager.currentPageTitle;
+                            else progressLabel.Text = "Purging caches";
                         }));
 
                         etaLabel.Invoke((MethodInvoker)(() =>
@@ -114,7 +114,6 @@ namespace OneNotePageSearcher
                     {
                         indexProgressBar.Hide();
                     }));
-                    MessageBox.Show("Full text search index successfully built!");
                 }
             ));
             backgroundThread.Start();
@@ -126,7 +125,7 @@ namespace OneNotePageSearcher
 
         private void ResultGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            oneNotePageIndexer.OpenPage(resList[e.RowIndex].Item1, resList[e.RowIndex].Item2);
+            oneNoteManager.OpenPage(resList[e.RowIndex].Item1, resList[e.RowIndex].Item2);
         }
 
         public void CreateNewRow()
@@ -136,16 +135,16 @@ namespace OneNotePageSearcher
 
         private void SearchButtonClick(object sender, EventArgs e)
         {
-            progressLabel.Visible = false;
-            etaLabel.Visible = false;
-            Console.WriteLine("Query: "+queryBox.Text);
-            resList = oneNotePageIndexer.Search(queryBox.Text);
+            progressLabel.Hide();
+            etaLabel.Hide();
+            Console.WriteLine("Query: " + queryBox.Text);
+            resList = oneNoteManager.Search(queryBox.Text);
 
             resultTable.Rows.Clear();
             for (var i = 0; i < 20 && i < resList.Count; i++)
             {
                 // TODO Add Page Title into index
-                resultTable.Rows.Add(resList[i].Item3.Substring(0,Math.Min(10, resList[i].Item3.Length)), resList[i].Item4, oneNotePageIndexer.GetPageTitle(resList[i].Item1));
+                resultTable.Rows.Add(resList[i].Item3.Substring(0, Math.Min(10, resList[i].Item3.Length)), resList[i].Item4, oneNoteManager.GetPageTitle(resList[i].Item1));
             }
             resultGridView.Show();
         }
@@ -154,16 +153,17 @@ namespace OneNotePageSearcher
         {
             Application.EnableVisualStyles();
             bool isDebug = false;
-            if(args.Length==1) isDebug = true;
+            if (args.Length == 1) isDebug = true;
             Application.Run(new SearchGUI(isDebug));
         }
 
         private void IndexButtonClick(object sender, EventArgs e)
         {
+            resultGridView.Hide();
             indexProgressBar.Show();
             etaLabel.Show();
             progressLabel.Show();
-            backgroundWorker.RunWorkerAsync();
+            bgWorker.RunWorkerAsync();
             progressLabel.Text = "Finished";
             etaLabel.Text = "";
         }

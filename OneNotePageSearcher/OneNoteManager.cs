@@ -6,6 +6,7 @@ using HtmlAgilityPack;
 using Microsoft.Office.Interop.OneNote;
 using System.IO;
 using System.Text;
+using System.Configuration;
 
 namespace OneNotePageSearcher
 {
@@ -15,7 +16,7 @@ namespace OneNotePageSearcher
 
         private NetLuceneProvider lucene;
 
-        private Microsoft.Office.Interop.OneNote.Application oneNote = new Microsoft.Office.Interop.OneNote.Application();
+        private Application oneNote = new Microsoft.Office.Interop.OneNote.Application();
 
         public double progressRate = 0;
         double count = 0;
@@ -24,6 +25,7 @@ namespace OneNotePageSearcher
         public bool canceled = false;
         public bool isDebug = false;
         public string currentPageTitle = "";
+        public bool isIndexing = false;
         string sampleNotebookUrl = null;
 
         private IEnumerable<XElement> pageList;
@@ -33,9 +35,9 @@ namespace OneNotePageSearcher
             this.isDebug = isDebug;
             lucene = new NetLuceneProvider(false);
             lucene.debug = this.isDebug;
-            
+
             string outputXML;
-            if(this.isDebug) sampleNotebookUrl = "{E9ACF59B-250A-0A88-1083-AD27FB56155D}{1}{B0}";
+            if (this.isDebug) sampleNotebookUrl = "{E9ACF59B-250A-0A88-1083-AD27FB56155D}{1}{B0}";
             oneNote.GetHierarchy(sampleNotebookUrl, HierarchyScope.hsPages, out outputXML);
             pageList = XDocument.Parse(outputXML).Descendants(One + "Page");
         }
@@ -64,7 +66,11 @@ namespace OneNotePageSearcher
                 if (isDebug) Console.WriteLine("Deleting: " + id);
                 lucene.DeleteDocumentByID(id);
             }
+            isIndexing = true;
             AddIndexFromID(updateID);
+            isIndexing = false;
+            var currentTime = String.Format("{0:u}", DateTime.UtcNow);
+            AddUpdateAppSettings("LastIndexTime", currentTime);
         }
 
         private void AddIndex()
@@ -81,20 +87,24 @@ namespace OneNotePageSearcher
         public void AddIndexFromID(HashSet<String> updateID)
         {
             totalCount = updateID.Count();
-            foreach (var id in updateID)
+            if (totalCount == 0) progressRate = 1;
+            else
             {
-                if (isDebug) Console.WriteLine("Adding: " + id);
-                lucene.DeleteDocumentByID(id);
-                count += 1;
-                progressRate = count / totalCount;
-                try
+                foreach (var id in updateID)
                 {
-                    IndexByParagraph(id);
-                }
-                catch (System.Runtime.InteropServices.COMException e)
-                {
-                    int code = e.HResult;
-                    if (isDebug) Console.WriteLine("Exception: Error Code is " + code);
+                    if (isDebug) Console.WriteLine("Adding: " + id);
+                    lucene.DeleteDocumentByID(id);
+                    count += 1;
+                    progressRate = count / totalCount;
+                    try
+                    {
+                        IndexByParagraph(id);
+                    }
+                    catch (System.Runtime.InteropServices.COMException e)
+                    {
+                        int code = e.HResult;
+                        if (isDebug) Console.WriteLine("Exception: Error Code is " + code);
+                    }
                 }
             }
         }
@@ -103,7 +113,7 @@ namespace OneNotePageSearcher
         {
             string xmlString;
             oneNote.GetPageContent(pageID, out xmlString);
-            
+
             var des = XDocument.Parse(xmlString).Descendants(One + "OE");
             currentPageTitle = GetPageTitle(pageID);
             if (isDebug) Console.WriteLine("\t" + des.Count() + " Paragraphs");
@@ -133,7 +143,7 @@ namespace OneNotePageSearcher
                 var text = GetTextFromNode(el);
                 if (text == null) continue;
                 var paragraphText = RemoveUnwantedTags(text);
-                if(isDebug)
+                if (isDebug)
                 {
                     using (StreamWriter w = File.AppendText("log.txt"))
                     {
@@ -173,7 +183,7 @@ namespace OneNotePageSearcher
         /// Send id in index, open requested page.
         /// </summary>
         /// <param name="id"></param>
-        public void OpenPage(string pageID, string paraID="NULL")
+        public void OpenPage(string pageID, string paraID = "NULL")
         {
             if (paraID == "NULL")
             {
@@ -204,7 +214,7 @@ namespace OneNotePageSearcher
             foreach (var n in pageList)
             {
                 idSet.Add(n.Attribute("ID").Value);
-                if(isDebug) Console.WriteLine(n.Attribute("lastModifiedTime").Value);
+                if (isDebug) Console.WriteLine(n.Attribute("lastModifiedTime").Value);
             }
             return idSet;
         }
@@ -232,15 +242,54 @@ namespace OneNotePageSearcher
             }
 
             // We also want to find page that is updated and created
-            string oldTime = "2018-06-18T08:56:47.000Z";
-            //var indexIDToCreate = new HashSet<String>();
+            string oldTime = ReadSetting("LastIndexTime") ?? "1978-06-18T08:56:47.000Z";
+            if (isDebug) Console.WriteLine(oldTime);
             foreach (var n in pageList)
             {
                 // Last Modified Time is after index time
                 if (CompareTimeByString(n.Attribute("lastModifiedTime").Value, oldTime))
                 {
+                    if (isDebug) Console.WriteLine(n.Attribute("lastModifiedTime").Value);
                     indexIDToCreate.Add(n.Attribute("ID").Value);
                 }
+            }
+        }
+
+        static string ReadSetting(string key)
+        {
+            string result;
+            try
+            {
+                var appSettings = ConfigurationManager.AppSettings;
+                result = appSettings[key];
+            }
+            catch (ConfigurationErrorsException)
+            {
+                result = null;
+            }
+            return result;
+        }
+
+        static void AddUpdateAppSettings(string key, string value)
+        {
+            try
+            {
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                var settings = configFile.AppSettings.Settings;
+                if (settings[key] == null)
+                {
+                    settings.Add(key, value);
+                }
+                else
+                {
+                    settings[key].Value = value;
+                }
+                configFile.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+            }
+            catch (ConfigurationErrorsException)
+            {
+                Console.WriteLine("Error writing app settings");
             }
         }
 
