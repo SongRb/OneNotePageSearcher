@@ -36,6 +36,7 @@ namespace OneNotePageSearcher
             this.searchButton = new System.Windows.Forms.Button();
             this.queryBox = new System.Windows.Forms.TextBox();
             this.outputField = new System.Windows.Forms.GroupBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.etaLabel = new System.Windows.Forms.Label();
             this.progressLabel = new System.Windows.Forms.Label();
             this.indexProgressBar = new System.Windows.Forms.ProgressBar();
@@ -93,6 +94,7 @@ namespace OneNotePageSearcher
             // 
             // outputField
             // 
+            this.outputField.Controls.Add(this.treeView1);
             this.outputField.Controls.Add(this.etaLabel);
             this.outputField.Controls.Add(this.progressLabel);
             this.outputField.Controls.Add(this.indexProgressBar);
@@ -102,6 +104,15 @@ namespace OneNotePageSearcher
             this.outputField.Size = new System.Drawing.Size(631, 300);
             this.outputField.TabIndex = 7;
             this.outputField.TabStop = false;
+            // 
+            // treeView1
+            // 
+            this.treeView1.Location = new System.Drawing.Point(19, 18);
+            this.treeView1.Margin = new System.Windows.Forms.Padding(4);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(592, 263);
+            this.treeView1.TabIndex = 9;
+            this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView1_NodeMouseDoubleClick);
             // 
             // etaLabel
             // 
@@ -143,7 +154,7 @@ namespace OneNotePageSearcher
             this.resultGridView.AllowUserToResizeRows = false;
             this.resultGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCellsExceptHeader;
             this.resultGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.resultGridView.Location = new System.Drawing.Point(21, 18);
+            this.resultGridView.Location = new System.Drawing.Point(19, 18);
             this.resultGridView.Margin = new System.Windows.Forms.Padding(4);
             this.resultGridView.Name = "resultGridView";
             this.resultGridView.ReadOnly = true;
@@ -170,6 +181,7 @@ namespace OneNotePageSearcher
             this.optionButton.TabIndex = 8;
             this.optionButton.Text = "Option";
             this.optionButton.UseVisualStyleBackColor = true;
+            this.optionButton.Click += new System.EventHandler(this.optionButton_Click);
             // 
             // SearchGUI
             // 
@@ -211,5 +223,6 @@ namespace OneNotePageSearcher
         private System.Windows.Forms.DataGridView resultGridView;
         private System.Windows.Forms.Button exitButton;
         private System.Windows.Forms.Button optionButton;
+        private TreeView treeView1;
     }
 }

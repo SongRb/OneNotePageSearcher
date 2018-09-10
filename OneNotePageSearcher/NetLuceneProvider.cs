@@ -106,9 +106,6 @@ namespace OneNotePageSearcher
 
         public List<Tuple<string, string, string, float>> Search(string q)
         {
-            //Setup searcher
-            //Directory directory = FSDirectory.Open(_indexPath);
-
             SetWorkingDirectory();
 
             var searcher = new IndexSearcher(indexDirectory);

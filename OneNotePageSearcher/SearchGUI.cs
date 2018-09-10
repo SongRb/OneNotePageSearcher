@@ -15,8 +15,11 @@ namespace OneNotePageSearcher
 
         BackgroundWorker bgWorker;
 
+        string viewMode = "tree";
+
         public SearchGUI(bool isDebug)
         {
+            ReloadSettings();
             oneNoteManager = new OneNoteManager(isDebug);
             InitializeComponent();
             InitializeResultGridView();
@@ -125,7 +128,19 @@ namespace OneNotePageSearcher
 
         private void ResultGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            oneNoteManager.OpenPage(resList[e.RowIndex].Item1, resList[e.RowIndex].Item2);
+            if (!oneNoteManager.OpenPage(resList[e.RowIndex].Item1, resList[e.RowIndex].Item2))
+            {
+                MessageBox.Show("Requested page not found, please reindex the page!");
+            }
+        }
+
+        void TreeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            var tuple = (Tuple<string, string, string, double>)e.Node.Tag;
+            if (!oneNoteManager.OpenPage(tuple.Item1, tuple.Item2 ?? "NULL"))
+            {
+                MessageBox.Show("Requested page not found, please reindex the page!");
+            }
         }
 
         public void CreateNewRow()
@@ -139,14 +154,51 @@ namespace OneNotePageSearcher
             etaLabel.Hide();
             Console.WriteLine("Query: " + queryBox.Text);
             resList = oneNoteManager.Search(queryBox.Text);
+            if (this.viewMode == "tree")
+            {
+                AddResultToTree();
+            }
+            else
+            {
+                AddResultToTable();
+            }
+        }
 
+        private void AddResultToTable()
+        {
+            resultGridView.Show();
+            treeView1.Hide();
             resultTable.Rows.Clear();
             for (var i = 0; i < 20 && i < resList.Count; i++)
             {
-                // TODO Add Page Title into index
                 resultTable.Rows.Add(resList[i].Item3.Substring(0, Math.Min(10, resList[i].Item3.Length)), resList[i].Item4, oneNoteManager.GetPageTitle(resList[i].Item1));
             }
             resultGridView.Show();
+        }
+
+        private void AddResultToTree()
+        {
+            Dictionary<string, List<Tuple<string, string, double>>> tree = new Dictionary<string, List<Tuple<string, string, double>>>();
+            for (var i = 0; i < resList.Count; i++)
+            {
+                if(!tree.ContainsKey(resList[i].Item1)) tree[resList[i].Item1] = new List<Tuple<string, string, double>>();
+                tree[resList[i].Item1].Add(new Tuple<string, string, double>(resList[i].Item2, resList[i].Item3, resList[4].Item4));
+            }
+            treeView1.Show();
+            foreach(var k in tree)
+            {
+                List<TreeNode> lst = new List<TreeNode>();
+                TreeNode tn;
+                foreach (var t in k.Value)
+                {
+                    tn = new TreeNode(t.Item2);
+                    tn.Tag = new Tuple<string, string, string, double>(k.Key, t.Item1, t.Item2, t.Item3);
+                    lst.Add(tn);
+                }
+                tn = new TreeNode(oneNoteManager.GetPageTitle(k.Key), lst.ToArray());
+                tn.Tag = new Tuple<string, string, string, double>(k.Key, null, null, 0);
+                treeView1.Nodes.Add(tn);
+            }
         }
 
         public static void Main(string[] args)
@@ -160,6 +212,7 @@ namespace OneNotePageSearcher
         private void IndexButtonClick(object sender, EventArgs e)
         {
             resultGridView.Hide();
+            treeView1.Hide();
             indexProgressBar.Show();
             etaLabel.Show();
             progressLabel.Show();
@@ -183,6 +236,19 @@ namespace OneNotePageSearcher
                 //Do something
                 SearchButtonClick(sender, e);
             }
+        }
+
+        private void optionButton_Click(object sender, EventArgs e)
+        {
+            var child = new UserSettings();
+            child.Owner = this;
+            child.Show();
+            ReloadSettings();
+        }
+
+        private void ReloadSettings()
+        {
+            this.viewMode = UserSettings.ReadSetting("view_mode");
         }
     }
 }

@@ -37,7 +37,6 @@ namespace OneNotePageSearcher
             lucene.debug = this.isDebug;
 
             string outputXML;
-            if (this.isDebug) sampleNotebookUrl = "{E9ACF59B-250A-0A88-1083-AD27FB56155D}{1}{B0}";
             oneNote.GetHierarchy(sampleNotebookUrl, HierarchyScope.hsPages, out outputXML);
             pageList = XDocument.Parse(outputXML).Descendants(One + "Page");
         }
@@ -70,7 +69,7 @@ namespace OneNotePageSearcher
             AddIndexFromID(updateID);
             isIndexing = false;
             var currentTime = String.Format("{0:u}", DateTime.UtcNow);
-            AddUpdateAppSettings("LastIndexTime", currentTime);
+            UserSettings.AddUpdateAppSettings("LastIndexTime", currentTime);
         }
 
         private void AddIndex()
@@ -183,15 +182,23 @@ namespace OneNotePageSearcher
         /// Send id in index, open requested page.
         /// </summary>
         /// <param name="id"></param>
-        public void OpenPage(string pageID, string paraID = "NULL")
+        public bool OpenPage(string pageID, string paraID = "NULL")
         {
-            if (paraID == "NULL")
+            try
             {
-                oneNote.NavigateTo(pageID);
+                if (paraID == "NULL")
+                {
+                    oneNote.NavigateTo(pageID);
+                }
+                else
+                {
+                    oneNote.NavigateTo(pageID, paraID);
+                }
+                return true;
             }
-            else
+            catch
             {
-                oneNote.NavigateTo(pageID, paraID);
+                return false;
             }
         }
 
@@ -242,7 +249,7 @@ namespace OneNotePageSearcher
             }
 
             // We also want to find page that is updated and created
-            string oldTime = ReadSetting("LastIndexTime") ?? "1978-06-18T08:56:47.000Z";
+            string oldTime = UserSettings.ReadSetting("LastIndexTime") ?? "1978-06-18T08:56:47.000Z";
             if (isDebug) Console.WriteLine(oldTime);
             foreach (var n in pageList)
             {
@@ -252,44 +259,6 @@ namespace OneNotePageSearcher
                     if (isDebug) Console.WriteLine(n.Attribute("lastModifiedTime").Value);
                     indexIDToCreate.Add(n.Attribute("ID").Value);
                 }
-            }
-        }
-
-        static string ReadSetting(string key)
-        {
-            string result;
-            try
-            {
-                var appSettings = ConfigurationManager.AppSettings;
-                result = appSettings[key];
-            }
-            catch (ConfigurationErrorsException)
-            {
-                result = null;
-            }
-            return result;
-        }
-
-        static void AddUpdateAppSettings(string key, string value)
-        {
-            try
-            {
-                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                var settings = configFile.AppSettings.Settings;
-                if (settings[key] == null)
-                {
-                    settings.Add(key, value);
-                }
-                else
-                {
-                    settings[key].Value = value;
-                }
-                configFile.Save(ConfigurationSaveMode.Modified);
-                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
-            }
-            catch (ConfigurationErrorsException)
-            {
-                Console.WriteLine("Error writing app settings");
             }
         }
 
@@ -306,8 +275,8 @@ namespace OneNotePageSearcher
         {
             if (string.IsNullOrEmpty(data)) return string.Empty;
 
-
-            var document = new HtmlAgilityPack.HtmlDocument();
+            data = data.Replace("&nbsp;", " ");
+            var document = new HtmlDocument();
             document.LoadHtml(data);
 
             var acceptableTags = new String[] { };
