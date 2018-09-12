@@ -52,7 +52,14 @@ namespace OneNotePageSearcher
         public void SetUpWriter(bool overwrite = true)
         {
             SetWorkingDirectory();
-            writer = new IndexWriter(indexDirectory, _analyzer, overwrite, IndexWriter.MaxFieldLength.UNLIMITED);
+            try
+            {
+                writer = new IndexWriter(indexDirectory, _analyzer, overwrite, IndexWriter.MaxFieldLength.UNLIMITED);
+            }
+            catch (Exception e)
+            {
+                writer = new IndexWriter(indexDirectory, _analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            }
         }
 
         public void CloseWriter()
