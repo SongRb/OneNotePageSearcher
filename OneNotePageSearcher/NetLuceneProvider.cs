@@ -14,7 +14,7 @@ namespace OneNotePageSearcher
 {
     internal class NetLuceneProvider
     {
-        private readonly string _indexPath = "LuceneIndex";
+        public string _indexPath;
 
         private readonly string _indexByDocumentPath = "LuceneIndex";
 
@@ -32,7 +32,6 @@ namespace OneNotePageSearcher
         public NetLuceneProvider(bool overwrite)
         {
             _analyzer = new StandardAnalyzer(Version.LUCENE_30);
-            SetWorkingDirectory();
         }
 
         public void SetWorkingDirectory()
@@ -42,6 +41,7 @@ namespace OneNotePageSearcher
 
         public void SetUpReader()
         {
+            SetWorkingDirectory();
             var indexReader = IndexReader.Open(indexDirectory, true);
             _maxDoc = indexReader.MaxDoc;
             if (debug) Console.WriteLine(_maxDoc);
@@ -51,6 +51,7 @@ namespace OneNotePageSearcher
 
         public void SetUpWriter(bool overwrite = true)
         {
+            SetWorkingDirectory();
             writer = new IndexWriter(indexDirectory, _analyzer, overwrite, IndexWriter.MaxFieldLength.UNLIMITED);
         }
 
@@ -107,34 +108,38 @@ namespace OneNotePageSearcher
         public List<Tuple<string, string, string, float>> Search(string q)
         {
             SetWorkingDirectory();
-
-            var searcher = new IndexSearcher(indexDirectory);
-            var parser = new QueryParser(Version.LUCENE_30, "postBody", _analyzer);
-
-            var query = parser.Parse(q);
-            var hits = searcher.Search(query, _searchLimit);
-
-            if (debug) Console.WriteLine(hits.TotalHits);
-
-            var results = hits.TotalHits;
-
             var resultList = new List<Tuple<string, string, string, float>>();
-
-            if (debug) Console.WriteLine("Found {0} results", results);
-            for (var i = 0; i < results && i < _searchLimit; i++)
+            try
             {
-                var doc = searcher.Doc(hits.ScoreDocs[i].Doc);
-                var score = hits.ScoreDocs[i].Score;
+                var searcher = new IndexSearcher(indexDirectory);
+                var parser = new QueryParser(Version.LUCENE_30, "postBody", _analyzer);
 
-                resultList.Add(new Tuple<string, string, string, float>(
-                    doc.Get("pageID"), doc.Get("paraID"), doc.Get("postBody"), score
-                    ));
+                var query = parser.Parse(q);
+                var hits = searcher.Search(query, _searchLimit);
+
+                if (debug) Console.WriteLine(hits.TotalHits);
+
+                var results = hits.TotalHits;
+
+                if (debug) Console.WriteLine("Found {0} results", results);
+                for (var i = 0; i < results && i < _searchLimit; i++)
+                {
+                    var doc = searcher.Doc(hits.ScoreDocs[i].Doc);
+                    var score = hits.ScoreDocs[i].Score;
+
+                    resultList.Add(new Tuple<string, string, string, float>(
+                        doc.Get("pageID"), doc.Get("paraID"), doc.Get("postBody"), score
+                        ));
+                }
+
+                //Clean up everything
+                searcher.Dispose();
+                indexDirectory.Dispose();
             }
+            catch (Exception e)
+            {
 
-
-            //Clean up everything
-            searcher.Dispose();
-            indexDirectory.Dispose();
+            }
             return resultList;
         }
 

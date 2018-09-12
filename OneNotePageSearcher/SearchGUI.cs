@@ -15,22 +15,23 @@ namespace OneNotePageSearcher
 
         BackgroundWorker bgWorker;
 
-        string viewMode = "tree";
+        UserSettings userSettings;
 
         public SearchGUI(bool isDebug)
         {
-            ReloadSettings();
             oneNoteManager = new OneNoteManager(isDebug);
             InitializeComponent();
             InitializeResultGridView();
             InitializeBackgroundWorker();
+            userSettings = new UserSettings();
+            oneNoteManager.setIndexDirectory(userSettings.indexPath);
         }
 
         private void InitializeResultGridView()
         {
             resultTable.Columns.Add(new DataColumn("Content", typeof(string)));
             resultTable.Columns.Add(new DataColumn("Score", typeof(float)));
-            resultTable.Columns.Add(new DataColumn("Source", typeof(string)));
+            resultTable.Columns.Add(new DataColumn("Title", typeof(string)));
             resultGridView.DataSource = resultTable;
             resultGridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
@@ -66,7 +67,8 @@ namespace OneNotePageSearcher
             Thread backgroundThread = new Thread(
                 new ThreadStart(() =>
                 {
-                    oneNoteManager.BuildIndex();
+                    oneNoteManager.setIndexDirectory(this.userSettings.indexPath);
+                    oneNoteManager.BuildIndex(this.userSettings.useCache, this.userSettings.indexMode);
                 }
             ));
             Thread guiThread = new Thread(
@@ -143,18 +145,13 @@ namespace OneNotePageSearcher
             }
         }
 
-        public void CreateNewRow()
-        {
-            resultTable.Rows.Add(1, "2", "3", 4, "5");
-        }
-
         private void SearchButtonClick(object sender, EventArgs e)
         {
             progressLabel.Hide();
             etaLabel.Hide();
             Console.WriteLine("Query: " + queryBox.Text);
             resList = oneNoteManager.Search(queryBox.Text);
-            if (this.viewMode == "tree")
+            if (userSettings.viewMode == GlobalVar.TreeViewMode)
             {
                 AddResultToTree();
             }
@@ -169,7 +166,7 @@ namespace OneNotePageSearcher
             resultGridView.Show();
             treeView1.Hide();
             resultTable.Rows.Clear();
-            for (var i = 0; i < 20 && i < resList.Count; i++)
+            for (var i = 0; i < resList.Count; i++)
             {
                 resultTable.Rows.Add(resList[i].Item3.Substring(0, Math.Min(10, resList[i].Item3.Length)), resList[i].Item4, oneNoteManager.GetPageTitle(resList[i].Item1));
             }
@@ -191,7 +188,7 @@ namespace OneNotePageSearcher
                 TreeNode tn;
                 foreach (var t in k.Value)
                 {
-                    tn = new TreeNode(t.Item2);
+                    tn = new TreeNode(t.Item2.Substring(0, Math.Min(t.Item2.Length, 30))+"...");
                     tn.Tag = new Tuple<string, string, string, double>(k.Key, t.Item1, t.Item2, t.Item3);
                     lst.Add(tn);
                 }
@@ -201,6 +198,7 @@ namespace OneNotePageSearcher
             }
         }
 
+        [STAThread]
         public static void Main(string[] args)
         {
             Application.EnableVisualStyles();
@@ -240,16 +238,19 @@ namespace OneNotePageSearcher
 
         private void optionButton_Click(object sender, EventArgs e)
         {
-            var child = new UserSettings();
-            child.Owner = this;
-            child.Show();
-            ReloadSettings();
+            userSettings.Owner = this;
+            userSettings.Show();
+            userSettings = new UserSettings();
         }
+    }
 
-        private void ReloadSettings()
-        {
-            this.viewMode = UserSettings.ReadSetting("view_mode");
-        }
+
+    public static class GlobalVar
+    {
+        public const string TreeViewMode = "tree";
+        public const string ListViewMode = "list";
+        public const string IndexByPageMode = "page";
+        public const string IndexByParagraphMode = "paragraph";
     }
 }
 

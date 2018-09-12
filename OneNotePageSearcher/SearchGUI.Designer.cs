@@ -91,6 +91,7 @@ namespace OneNotePageSearcher
             this.queryBox.Name = "queryBox";
             this.queryBox.Size = new System.Drawing.Size(335, 22);
             this.queryBox.TabIndex = 4;
+            this.queryBox.KeyUp += QueryBoxKeyUp;
             // 
             // outputField
             // 

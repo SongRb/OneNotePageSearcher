@@ -6,7 +6,6 @@ using HtmlAgilityPack;
 using Microsoft.Office.Interop.OneNote;
 using System.IO;
 using System.Text;
-using System.Configuration;
 
 namespace OneNotePageSearcher
 {
@@ -16,7 +15,7 @@ namespace OneNotePageSearcher
 
         private NetLuceneProvider lucene;
 
-        private Application oneNote = new Microsoft.Office.Interop.OneNote.Application();
+        private Application oneNote = new Application();
 
         public double progressRate = 0;
         double count = 0;
@@ -27,7 +26,7 @@ namespace OneNotePageSearcher
         public string currentPageTitle = "";
         public bool isIndexing = false;
         string sampleNotebookUrl = null;
-
+        
         private IEnumerable<XElement> pageList;
 
         public OneNoteManager(bool isDebug)
@@ -41,24 +40,35 @@ namespace OneNotePageSearcher
             pageList = XDocument.Parse(outputXML).Descendants(One + "Page");
         }
 
-
-        public void BuildIndex()
+        /// <summary>
+        /// Add or update index in lucene.
+        /// </summary>
+        /// <param name="useCache">Indicate use previous cache or do a clean index.</param>
+        public void BuildIndex(bool useCache, string indexMode)
         {
             progressRate = 0;
             string outputXML;
             oneNote.GetHierarchy(null, HierarchyScope.hsPages, out outputXML);
             pageList = XDocument.Parse(outputXML).Descendants(One + "Page");
             lucene.SetWorkingDirectory();
-            AddIndexByTime();
+            if (useCache)
+            {
+                AddIndexByTime(indexMode);
+            }
+            else
+            {
+                AddAllIndex(indexMode);
+            }
             lucene.CloseWriter();
         }
 
-        public void AddIndexByTime()
+        /// <summary>
+        /// Just update lucene index.
+        /// </summary>
+        private void AddIndexByTime(string indexMode)
         {
             lucene.SetUpWriter(false);
-            HashSet<String> deletedID;
-            HashSet<String> updateID;
-            GetUpdateIndexID(out deletedID, out updateID);
+            GetUpdateIndexID(out HashSet<string> deletedID, out HashSet<string> updateID);
             if (isDebug) Console.WriteLine("Begining Index Process...");
             foreach (var id in deletedID)
             {
@@ -66,13 +76,16 @@ namespace OneNotePageSearcher
                 lucene.DeleteDocumentByID(id);
             }
             isIndexing = true;
-            AddIndexFromID(updateID);
+            AddIndexFromID(updateID, indexMode);
             isIndexing = false;
             var currentTime = String.Format("{0:u}", DateTime.UtcNow);
             UserSettings.AddUpdateAppSettings("LastIndexTime", currentTime);
         }
 
-        private void AddIndex()
+        /// <summary>
+        /// Add all index and invalidates cache.
+        /// </summary>
+        private void AddAllIndex(string indexMode)
         {
             lucene.SetUpWriter(true);
             HashSet<String> updateID = new HashSet<string>();
@@ -80,10 +93,14 @@ namespace OneNotePageSearcher
             {
                 updateID.Add(n.Attribute("ID").Value);
             }
-            AddIndexFromID(updateID);
+            AddIndexFromID(updateID, indexMode);
         }
 
-        public void AddIndexFromID(HashSet<String> updateID)
+        /// <summary>
+        /// Update/Create current lucene index by paragraph id. Due to out-of-date
+        /// </summary>
+        /// <param name="updateID">An iterable contains all paragraph id should be updated</param>
+        private void AddIndexFromID(HashSet<String> updateID, string indexMode)
         {
             totalCount = updateID.Count();
             if (totalCount == 0) progressRate = 1;
@@ -97,7 +114,8 @@ namespace OneNotePageSearcher
                     progressRate = count / totalCount;
                     try
                     {
-                        IndexByParagraph(id);
+                        if (indexMode == GlobalVar.IndexByParagraphMode) IndexByParagraph(id);
+                        else IndexByDocument(id);
                     }
                     catch (System.Runtime.InteropServices.COMException e)
                     {
@@ -108,6 +126,10 @@ namespace OneNotePageSearcher
             }
         }
 
+        /// <summary>
+        /// Create index by content of paragraph in page.
+        /// </summary>
+        /// <param name="pageID"></param>
         private void IndexByParagraph(string pageID)
         {
             string xmlString;
@@ -130,6 +152,10 @@ namespace OneNotePageSearcher
             }
         }
 
+        /// <summary>
+        /// Create index by whole content in page.
+        /// </summary>
+        /// <param name="pageID"></param>
         private void IndexByDocument(string pageID)
         {
             string xmlString;
@@ -179,7 +205,7 @@ namespace OneNotePageSearcher
         }
 
         /// <summary>
-        /// Send id in index, open requested page.
+        /// Send page id(from index), open requested page.
         /// </summary>
         /// <param name="id"></param>
         public bool OpenPage(string pageID, string paraID = "NULL")
@@ -203,8 +229,10 @@ namespace OneNotePageSearcher
         }
 
         /// <summary>
-        /// Send id in index, return requested page title
+        /// Send page id(from index), get page title.
         /// </summary>
+        /// <param name="pageId"></param>
+        /// <returns>page title</returns>
         public string GetPageTitle(string pageId)
         {
             IEnumerable<XElement> pages =
@@ -215,6 +243,10 @@ namespace OneNotePageSearcher
             else return "Default Title";
         }
 
+        /// <summary>
+        /// Get a list of page id from current onenote content.
+        /// </summary>
+        /// <returns></returns>
         public HashSet<String> GetAllPageId()
         {
             var idSet = new HashSet<String>();
@@ -260,6 +292,11 @@ namespace OneNotePageSearcher
                     indexIDToCreate.Add(n.Attribute("ID").Value);
                 }
             }
+        }
+
+        public void setIndexDirectory(string indexDir)
+        {
+            this.lucene._indexPath = indexDir;
         }
 
         public void Main()
