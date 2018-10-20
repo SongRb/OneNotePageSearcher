@@ -112,10 +112,10 @@ namespace OneNotePageSearcher
             if (debug) Console.Read();
         }
 
-        public List<Tuple<string, string, string, float>> Search(string q)
+        public List<SearchResult> Search(string q)
         {
             SetWorkingDirectory();
-            var resultList = new List<Tuple<string, string, string, float>>();
+            var resultList = new List<SearchResult>();
             try
             {
                 var searcher = new IndexSearcher(indexDirectory);
@@ -134,9 +134,11 @@ namespace OneNotePageSearcher
                     var doc = searcher.Doc(hits.ScoreDocs[i].Doc);
                     var score = hits.ScoreDocs[i].Score;
 
-                    resultList.Add(new Tuple<string, string, string, float>(
-                        doc.Get("pageID"), doc.Get("paraID"), doc.Get("postBody"), score
-                        ));
+                    resultList.Add(
+                        new SearchResult(
+                            doc.Get("pageID"), doc.Get("paraID"), doc.Get("postBody"), score
+                        )
+                    );
                 }
 
                 //Clean up everything

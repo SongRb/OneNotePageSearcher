@@ -1,4 +1,6 @@
-﻿namespace OneNotePageSearcher
+﻿using System.Windows.Forms;
+
+namespace OneNotePageSearcher
 {
     partial class UserSettings
     {
@@ -172,6 +174,9 @@
             this.currentIndexPathLabel.Name = "currentIndexPathLabel";
             this.currentIndexPathLabel.Size = new System.Drawing.Size(0, 13);
             this.currentIndexPathLabel.TabIndex = 8;
+            this.currentIndexPathLabel.MouseHover += new System.EventHandler(this.OnMouseHover);
+            this.currentIndexPathLabel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OnMouseMove);
+            this.currentIndexPathLabel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OnMouseClick);
             // 
             // indexDirBtn
             // 

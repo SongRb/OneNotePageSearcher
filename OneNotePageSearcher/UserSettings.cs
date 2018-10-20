@@ -30,7 +30,7 @@ namespace OneNotePageSearcher
 
         private void disableParentForm(object sender, EventArgs e)
         {
-            this.TopMost = true;
+            this.TopMost = false;
             this.Owner.Enabled = false;
         }
 
@@ -78,7 +78,7 @@ namespace OneNotePageSearcher
             if (this.viewMode == "tree") this.treeViewRatioButton.Checked = true;
             else this.listViewRatioButton.Checked = true;
 
-            this.indexPath = ReadSetting("index_path") ??  Path.GetFullPath(Path.GetDirectoryName(Application.ExecutablePath)+ "\\LuceneIndex");
+            this.indexPath = ReadSetting("index_path") ??  Path.GetFullPath(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal) + "\\OneNotePageIndex");
             Directory.CreateDirectory(this.indexPath);
             this.currentIndexPathLabel.Text = "Index path:\n" + this.indexPath;
 
@@ -116,6 +116,28 @@ namespace OneNotePageSearcher
                 this.indexPath = folderBrowserDialog1.SelectedPath;
                 currentIndexPathLabel.Text = "Local index path:\n"+folderBrowserDialog1.SelectedPath;
             }
+        }
+
+        protected void OnMouseHover(object sender, EventArgs e)
+        {
+
+            Cursor = Cursors.Hand;
+        }
+
+        protected void OnMouseMove(object sender, EventArgs e)
+        {
+
+            // Make the cursor the Hand cursor when the mouse moves 
+            // over the button.
+            Cursor = Cursors.Hand;
+        }
+
+        protected void OnMouseClick(object sender, EventArgs e)
+        {
+
+            // Make the cursor the Hand cursor when the mouse moves 
+            // over the button.
+            System.Diagnostics.Process.Start(this.indexPath);
         }
     }
 }

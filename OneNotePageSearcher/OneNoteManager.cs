@@ -199,7 +199,7 @@ namespace OneNotePageSearcher
             return text.ToString();
         }
 
-        public List<Tuple<string, string, string, float>> Search(string query)
+        public List<SearchResult> Search(string query)
         {
             return lucene.Search(query);
         }

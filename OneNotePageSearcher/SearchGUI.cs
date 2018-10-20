@@ -10,7 +10,7 @@ namespace OneNotePageSearcher
     public partial class SearchGUI : Form
     {
         DataTable resultTable = new DataTable();
-        List<Tuple<string, string, string, float>> resList;
+        List<SearchResult> resList;
         OneNoteManager oneNoteManager;
 
         BackgroundWorker bgWorker;
@@ -130,7 +130,7 @@ namespace OneNotePageSearcher
 
         private void ResultGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (!oneNoteManager.OpenPage(resList[e.RowIndex].Item1, resList[e.RowIndex].Item2))
+            if (!oneNoteManager.OpenPage(resList[e.RowIndex].pageID, resList[e.RowIndex].paraID))
             {
                 MessageBox.Show("Requested page not found, please reindex the page!");
             }
@@ -166,21 +166,28 @@ namespace OneNotePageSearcher
             resultGridView.Show();
             treeView1.Hide();
             resultTable.Rows.Clear();
-            for (var i = 0; i < resList.Count; i++)
+
+            foreach(var searchResult in resList)
             {
-                resultTable.Rows.Add(resList[i].Item3.Substring(0, Math.Min(10, resList[i].Item3.Length)), resList[i].Item4, oneNoteManager.GetPageTitle(resList[i].Item1));
+                resultTable.Rows.Add(
+                    searchResult.postBody.Substring(0, Math.Min(10, searchResult.postBody.Length)), 
+                    searchResult.score, 
+                    oneNoteManager.GetPageTitle(searchResult.pageID)
+                );
             }
             resultGridView.Show();
         }
 
         private void AddResultToTree()
         {
-            Dictionary<string, List<Tuple<string, string, double>>> tree = new Dictionary<string, List<Tuple<string, string, double>>>();
-            for (var i = 0; i < resList.Count; i++)
+            Dictionary<string, List<SearchResult>> tree = new Dictionary<string, List<SearchResult>>();
+            foreach(var result in resList)
             {
-                if(!tree.ContainsKey(resList[i].Item1)) tree[resList[i].Item1] = new List<Tuple<string, string, double>>();
-                tree[resList[i].Item1].Add(new Tuple<string, string, double>(resList[i].Item2, resList[i].Item3, resList[4].Item4));
+                if(!tree.ContainsKey(result.pageID)) tree[result.pageID] = new List<SearchResult>();
+                tree[result.pageID].Add(result);
             }
+
+            treeView1.Nodes.Clear();
             treeView1.Show();
             foreach(var k in tree)
             {
@@ -188,8 +195,8 @@ namespace OneNotePageSearcher
                 TreeNode tn;
                 foreach (var t in k.Value)
                 {
-                    tn = new TreeNode(t.Item2.Substring(0, Math.Min(t.Item2.Length, 30))+"...");
-                    tn.Tag = new Tuple<string, string, string, double>(k.Key, t.Item1, t.Item2, t.Item3);
+                    tn = new TreeNode(t.postBody.Substring(0, Math.Min(t.postBody.Length, 30))+"...");
+                    tn.Tag = new Tuple<string, string, string, double>(t.pageID, t.paraID, t.postBody, t.score);
                     lst.Add(tn);
                 }
                 tn = new TreeNode(oneNoteManager.GetPageTitle(k.Key), lst.ToArray());
@@ -231,15 +238,13 @@ namespace OneNotePageSearcher
         {
             if (e.KeyCode == Keys.Enter)
             {
-                //Do something
                 SearchButtonClick(sender, e);
             }
         }
 
         private void optionButton_Click(object sender, EventArgs e)
         {
-            userSettings.Owner = this;
-            userSettings.Show();
+            userSettings.Show(this);
             userSettings = new UserSettings();
         }
     }
@@ -251,6 +256,22 @@ namespace OneNotePageSearcher
         public const string ListViewMode = "list";
         public const string IndexByPageMode = "page";
         public const string IndexByParagraphMode = "paragraph";
+    }
+
+    public class SearchResult
+    {
+        public string pageID;
+        public string paraID;
+        public string postBody;
+        public double score;
+        public string usefulContent;
+        public SearchResult(string pageID, string paraID, string postBody, double score)
+        {
+            this.pageID = pageID;
+            this.paraID = paraID;
+            this.postBody = postBody;
+            this.score = score;
+        }
     }
 }
 
