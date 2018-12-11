@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
@@ -7,6 +9,7 @@ using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
+using Directory = Lucene.Net.Store.Directory;
 using Version = Lucene.Net.Util.Version;
 
 
@@ -159,6 +162,12 @@ namespace OneNotePageSearcher
             doc.Add(new Field("paraID", paraID, Field.Store.YES, Field.Index.NOT_ANALYZED));
             doc.Add(new Field("postBody", text, Field.Store.YES, Field.Index.ANALYZED));
             writer.AddDocument(doc);
+        }
+
+        public string GetLastUpdatedTime()
+        {
+            var fileList = new DirectoryInfo(_indexPath).GetFiles();
+            return fileList.Any() ? fileList.Min(file => file.LastWriteTime).ToString("yyyy-MM-ddTHH:mm:ss.fffK") : "1978-06-18T08:56:47.000Z";
         }
     }
 }
