@@ -104,7 +104,9 @@ namespace OneNotePageSearcher
             if (this.treeViewRatioButton.Checked) this.viewMode = GlobalVar.TreeViewMode;
             else this.viewMode = GlobalVar.ListViewMode;
 
-            AddUpdateAppSettings("view_mode", viewMode);
+            AddUpdateAppSettings("view_mode", this.viewMode);
+            AddUpdateAppSettings("index_path", this.indexPath);
+            reloadSettings();
             this.Owner.Enabled = true;
             this.Close();
         }
@@ -114,7 +116,7 @@ namespace OneNotePageSearcher
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
             {
                 this.indexPath = folderBrowserDialog1.SelectedPath;
-                currentIndexPathLabel.Text = "Local index path:\n"+folderBrowserDialog1.SelectedPath;
+                currentIndexPathLabel.Text = "Local index path:\n" + this.indexPath;
             }
         }
 

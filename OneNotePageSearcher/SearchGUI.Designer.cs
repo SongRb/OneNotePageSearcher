@@ -91,7 +91,6 @@ namespace OneNotePageSearcher
             this.queryBox.Name = "queryBox";
             this.queryBox.Size = new System.Drawing.Size(335, 22);
             this.queryBox.TabIndex = 4;
-            this.queryBox.KeyUp += QueryBoxKeyUp;
             // 
             // outputField
             // 
@@ -201,7 +200,6 @@ namespace OneNotePageSearcher
             this.Name = "SearchGUI";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Search OneNote Content";
-            this.TopMost = true;
             this.inputField.ResumeLayout(false);
             this.inputField.PerformLayout();
             this.outputField.ResumeLayout(false);

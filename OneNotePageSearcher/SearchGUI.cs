@@ -88,7 +88,13 @@ namespace OneNotePageSearcher
                         if (!oneNoteManager.isIndexing) elapsedMs = watch.ElapsedMilliseconds;
                         progressLabel.Invoke((MethodInvoker)(() =>
                         {
-                            if (oneNoteManager.isIndexing) progressLabel.Text = "Adding " + oneNoteManager.currentPageTitle;
+                            if (oneNoteManager.isIndexing) progressLabel.Text =
+                                String.Format(
+                                    "Adding {0} from {1}", 
+                                    oneNoteManager.currentPageTitle, 
+                                    oneNoteManager.currentNotebookTitle
+                                    );
+
                             else progressLabel.Text = "Purging caches";
                         }));
 
@@ -211,7 +217,9 @@ namespace OneNotePageSearcher
             Application.EnableVisualStyles();
             bool isDebug = false;
             if (args.Length == 1) isDebug = true;
-            Application.Run(new SearchGUI(isDebug));
+            Form searchGUI = new SearchGUI(isDebug);
+            searchGUI.BringToFront();
+            Application.Run(searchGUI);
         }
 
         private void IndexButtonClick(object sender, EventArgs e)
@@ -244,8 +252,8 @@ namespace OneNotePageSearcher
 
         private void optionButton_Click(object sender, EventArgs e)
         {
-            userSettings.Show(this);
             userSettings = new UserSettings();
+            userSettings.Show(this);
         }
     }
 

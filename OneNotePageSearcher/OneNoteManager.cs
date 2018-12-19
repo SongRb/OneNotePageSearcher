@@ -23,11 +23,15 @@ namespace OneNotePageSearcher
 
         public bool canceled = false;
         public bool isDebug = false;
+
         public string currentPageTitle = "";
+        public string currentNotebookTitle = "";
+
         public bool isIndexing = false;
         string sampleNotebookUrl = null;
-        
-        private IEnumerable<XElement> pageList;
+
+        private Dictionary<string, NotebookMetaInfo> notebookMetaInfo;
+        private Dictionary<string, PageMetaInfo> pageMetaInfo;
 
         public OneNoteManager(bool isDebug)
         {
@@ -37,7 +41,6 @@ namespace OneNotePageSearcher
 
             string outputXML;
             oneNote.GetHierarchy(sampleNotebookUrl, HierarchyScope.hsPages, out outputXML);
-            pageList = XDocument.Parse(outputXML).Descendants(One + "Page");
         }
 
         /// <summary>
@@ -46,10 +49,29 @@ namespace OneNotePageSearcher
         /// <param name="useCache">Indicate use previous cache or do a clean index.</param>
         public void BuildIndex(bool useCache, string indexMode)
         {
+            notebookMetaInfo = new Dictionary<string, NotebookMetaInfo>();
+            pageMetaInfo = new Dictionary<string, PageMetaInfo>();
+
             progressRate = 0;
             string outputXML;
             oneNote.GetHierarchy(null, HierarchyScope.hsPages, out outputXML);
-            pageList = XDocument.Parse(outputXML).Descendants(One + "Page");
+            var notebookList = XDocument.Parse(outputXML).Descendants(One + "Notebook");
+
+            foreach (var n in notebookList)
+            {
+                var notebookInfo = new NotebookMetaInfo(n);
+
+                var page4book = n.Descendants(One + "Page");
+                foreach (var nn in page4book)
+                {
+                    var pageInfo = new PageMetaInfo(nn);
+                    notebookInfo.pageIDSet.Add(pageInfo.id);
+                    pageMetaInfo.Add(pageInfo.id, pageInfo);
+                }
+
+                notebookMetaInfo.Add(notebookInfo.id, notebookInfo);
+            }
+
             lucene.SetWorkingDirectory();
             if (useCache)
             {
@@ -89,9 +111,9 @@ namespace OneNotePageSearcher
         {
             lucene.SetUpWriter(true);
             HashSet<String> updateID = new HashSet<string>();
-            foreach (var n in pageList)
+            foreach (var n in pageMetaInfo.Values)
             {
-                updateID.Add(n.Attribute("ID").Value);
+                updateID.Add(n.id);
             }
             AddIndexFromID(updateID, indexMode);
         }
@@ -137,6 +159,7 @@ namespace OneNotePageSearcher
 
             var des = XDocument.Parse(xmlString).Descendants(One + "OE");
             currentPageTitle = GetPageTitle(pageID);
+            currentNotebookTitle = GetPageNotebookTitle(pageID);
             if (isDebug) Console.WriteLine("\t" + des.Count() + " Paragraphs");
 
             if (des.Count() > 0)
@@ -231,16 +254,27 @@ namespace OneNotePageSearcher
         /// <summary>
         /// Send page id(from index), get page title.
         /// </summary>
-        /// <param name="pageId"></param>
+        /// <param name="pageID"></param>
         /// <returns>page title</returns>
-        public string GetPageTitle(string pageId)
+        public string GetPageTitle(string pageID)
         {
-            IEnumerable<XElement> pages =
-                (from el in pageList
-                 where el.Attribute("ID").Value == pageId
-                 select el);
-            if (pages.Any()) return pages.First().Attribute("name").Value;
-            else return "Default Title";
+            if(pageMetaInfo.ContainsKey(pageID))
+            {
+                return pageMetaInfo[pageID].name;
+            }
+            else
+            {
+                return "Default Title";
+            }
+        }
+
+        public string GetPageNotebookTitle(string pageID)
+        {
+            foreach(var notebook in notebookMetaInfo.Values)
+            {
+                if (notebook.pageIDSet.Contains(pageID)) return notebook.name;
+            }
+            return "Defaule Title";
         }
 
         /// <summary>
@@ -249,13 +283,7 @@ namespace OneNotePageSearcher
         /// <returns></returns>
         public HashSet<String> GetAllPageId()
         {
-            var idSet = new HashSet<String>();
-            foreach (var n in pageList)
-            {
-                idSet.Add(n.Attribute("ID").Value);
-                if (isDebug) Console.WriteLine(n.Attribute("lastModifiedTime").Value);
-            }
-            return idSet;
+            return new HashSet<string>(pageMetaInfo.Keys.ToArray());
         }
 
         // If t1 is older than t2, return true, otherwise return false
@@ -284,13 +312,13 @@ namespace OneNotePageSearcher
             // DateTime.Now.ToString("yyyy’-‘MM’-‘dd’T’HH’:’mm’:’ss.fffK")
             string oldTime = UserSettings.ReadSetting("LastIndexTime") ?? lucene.GetLastUpdatedTime();
             if (isDebug) Console.WriteLine(oldTime);
-            foreach (var n in pageList)
+            foreach (var n in pageMetaInfo.Values)
             {
                 // Last Modified Time is after index time
-                if (CompareTimeByString(n.Attribute("lastModifiedTime").Value, oldTime))
+                if (CompareTimeByString(n.lastModifiedTime, oldTime))
                 {
-                    if (isDebug) Console.WriteLine(n.Attribute("lastModifiedTime").Value);
-                    indexIDToCreate.Add(n.Attribute("ID").Value);
+                    if (isDebug) Console.WriteLine(n.lastModifiedTime);
+                    indexIDToCreate.Add(n.id);
                 }
             }
         }
@@ -356,4 +384,35 @@ namespace OneNotePageSearcher
             w.WriteLine(logMessage);
         }
     }
+
+    class BaseMetaInfo
+    {
+        public string name;
+        public string id;
+        public string lastModifiedTime;
+
+        public BaseMetaInfo(XElement node)
+        {
+            name = node.Attribute("name").Value;
+            id = node.Attribute("ID").Value;
+            lastModifiedTime = node.Attribute("lastModifiedTime").Value;
+        }
+    }
+
+    class NotebookMetaInfo: BaseMetaInfo
+    {
+        public HashSet<string> pageIDSet;
+
+        public NotebookMetaInfo(XElement node): base(node)
+        {
+            pageIDSet = new HashSet<string>();
+        }
+    }
+
+    class PageMetaInfo: BaseMetaInfo
+    {
+        public PageMetaInfo(XElement node): base(node) { }
+    }
+
+
 }
