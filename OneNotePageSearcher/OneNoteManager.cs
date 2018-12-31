@@ -28,7 +28,6 @@ namespace OneNotePageSearcher
         public string currentNotebookTitle = "";
 
         public bool isIndexing = false;
-        string sampleNotebookUrl = null;
 
         private Dictionary<string, NotebookMetaInfo> notebookMetaInfo;
         private Dictionary<string, PageMetaInfo> pageMetaInfo;
@@ -39,23 +38,17 @@ namespace OneNotePageSearcher
             lucene = new NetLuceneProvider(false);
             lucene.debug = this.isDebug;
 
-            string outputXML;
-            oneNote.GetHierarchy(sampleNotebookUrl, HierarchyScope.hsPages, out outputXML);
+            BuildMetaInfo();
         }
 
-        /// <summary>
-        /// Add or update index in lucene.
-        /// </summary>
-        /// <param name="useCache">Indicate use previous cache or do a clean index.</param>
-        public void BuildIndex(bool useCache, string indexMode)
+        private void BuildMetaInfo()
         {
-            notebookMetaInfo = new Dictionary<string, NotebookMetaInfo>();
-            pageMetaInfo = new Dictionary<string, PageMetaInfo>();
-
-            progressRate = 0;
             string outputXML;
             oneNote.GetHierarchy(null, HierarchyScope.hsPages, out outputXML);
             var notebookList = XDocument.Parse(outputXML).Descendants(One + "Notebook");
+
+            notebookMetaInfo = new Dictionary<string, NotebookMetaInfo>();
+            pageMetaInfo = new Dictionary<string, PageMetaInfo>();
 
             foreach (var n in notebookList)
             {
@@ -71,7 +64,15 @@ namespace OneNotePageSearcher
 
                 notebookMetaInfo.Add(notebookInfo.id, notebookInfo);
             }
+        }
 
+        /// <summary>
+        /// Add or update index in lucene.
+        /// </summary>
+        /// <param name="useCache">Indicate use previous cache or do a clean index.</param>
+        public void BuildIndex(bool useCache, string indexMode)
+        {
+            progressRate = 0;
             lucene.SetWorkingDirectory();
             if (useCache)
             {
