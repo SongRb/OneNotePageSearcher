@@ -119,39 +119,34 @@ namespace OneNotePageSearcher
         {
             SetWorkingDirectory();
             var resultList = new List<SearchResult>();
-            try
+
+            var searcher = new IndexSearcher(indexDirectory);
+            var parser = new QueryParser(Version.LUCENE_30, "postBody", _analyzer);
+
+            var query = parser.Parse(q);
+            var hits = searcher.Search(query, _searchLimit);
+
+            if (debug) Console.WriteLine(hits.TotalHits);
+
+            var results = hits.TotalHits;
+
+            if (debug) Console.WriteLine("Found {0} results", results);
+            for (var i = 0; i < results && i < _searchLimit; i++)
             {
-                var searcher = new IndexSearcher(indexDirectory);
-                var parser = new QueryParser(Version.LUCENE_30, "postBody", _analyzer);
+                var doc = searcher.Doc(hits.ScoreDocs[i].Doc);
+                var score = hits.ScoreDocs[i].Score;
 
-                var query = parser.Parse(q);
-                var hits = searcher.Search(query, _searchLimit);
-
-                if (debug) Console.WriteLine(hits.TotalHits);
-
-                var results = hits.TotalHits;
-
-                if (debug) Console.WriteLine("Found {0} results", results);
-                for (var i = 0; i < results && i < _searchLimit; i++)
-                {
-                    var doc = searcher.Doc(hits.ScoreDocs[i].Doc);
-                    var score = hits.ScoreDocs[i].Score;
-
-                    resultList.Add(
-                        new SearchResult(
-                            doc.Get("pageID"), doc.Get("paraID"), doc.Get("postBody"), score
-                        )
-                    );
-                }
-
-                //Clean up everything
-                searcher.Dispose();
-                indexDirectory.Dispose();
+                resultList.Add(
+                    new SearchResult(
+                        doc.Get("pageID"), doc.Get("paraID"), doc.Get("postBody"), score
+                    )
+                );
             }
-            catch (Exception e)
-            {
 
-            }
+            //Clean up everything
+            searcher.Dispose();
+            indexDirectory.Dispose();
+
             return resultList;
         }
 

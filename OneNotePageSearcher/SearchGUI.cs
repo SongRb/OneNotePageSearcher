@@ -156,15 +156,24 @@ namespace OneNotePageSearcher
             progressLabel.Hide();
             etaLabel.Hide();
             Console.WriteLine("Query: " + queryBox.Text);
-            resList = oneNoteManager.Search(queryBox.Text);
-            if (userSettings.viewMode == GlobalVar.TreeViewMode)
+            try
             {
-                AddResultToTree();
+                resList = oneNoteManager.Search(queryBox.Text);
+
+                if (userSettings.viewMode == GlobalVar.TreeViewMode)
+                {
+                    AddResultToTree();
+                }
+                else
+                {
+                    AddResultToTable();
+                }
             }
-            else
+            catch (System.IO.FileNotFoundException)
             {
-                AddResultToTable();
+                MessageBox.Show("Requested index not found, please reindex!");
             }
+
         }
 
         private void AddResultToTable()

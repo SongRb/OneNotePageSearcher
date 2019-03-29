@@ -53,19 +53,19 @@ namespace OneNotePageSearcher
             this.inputField.Controls.Add(this.indexButton);
             this.inputField.Controls.Add(this.searchButton);
             this.inputField.Controls.Add(this.queryBox);
-            this.inputField.Location = new System.Drawing.Point(12, 12);
+            this.inputField.Location = new System.Drawing.Point(10, 13);
             this.inputField.Name = "inputField";
-            this.inputField.Size = new System.Drawing.Size(631, 56);
+            this.inputField.Size = new System.Drawing.Size(552, 60);
             this.inputField.TabIndex = 7;
             this.inputField.TabStop = false;
             // 
             // indexButton
             // 
             this.indexButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.indexButton.Location = new System.Drawing.Point(511, 17);
+            this.indexButton.Location = new System.Drawing.Point(447, 18);
             this.indexButton.Margin = new System.Windows.Forms.Padding(4);
             this.indexButton.Name = "indexButton";
-            this.indexButton.Size = new System.Drawing.Size(100, 28);
+            this.indexButton.Size = new System.Drawing.Size(88, 30);
             this.indexButton.TabIndex = 6;
             this.indexButton.Text = "Index";
             this.indexButton.UseVisualStyleBackColor = true;
@@ -74,10 +74,10 @@ namespace OneNotePageSearcher
             // searchButton
             // 
             this.searchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.searchButton.Location = new System.Drawing.Point(403, 17);
+            this.searchButton.Location = new System.Drawing.Point(353, 18);
             this.searchButton.Margin = new System.Windows.Forms.Padding(4);
             this.searchButton.Name = "searchButton";
-            this.searchButton.Size = new System.Drawing.Size(100, 28);
+            this.searchButton.Size = new System.Drawing.Size(88, 30);
             this.searchButton.TabIndex = 5;
             this.searchButton.Text = "Search";
             this.searchButton.UseVisualStyleBackColor = true;
@@ -86,10 +86,10 @@ namespace OneNotePageSearcher
             // queryBox
             // 
             this.queryBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.queryBox.Location = new System.Drawing.Point(19, 20);
+            this.queryBox.Location = new System.Drawing.Point(17, 21);
             this.queryBox.Margin = new System.Windows.Forms.Padding(4);
             this.queryBox.Name = "queryBox";
-            this.queryBox.Size = new System.Drawing.Size(335, 22);
+            this.queryBox.Size = new System.Drawing.Size(294, 22);
             this.queryBox.TabIndex = 4;
             // 
             // outputField
@@ -99,18 +99,18 @@ namespace OneNotePageSearcher
             this.outputField.Controls.Add(this.progressLabel);
             this.outputField.Controls.Add(this.indexProgressBar);
             this.outputField.Controls.Add(this.resultGridView);
-            this.outputField.Location = new System.Drawing.Point(12, 74);
+            this.outputField.Location = new System.Drawing.Point(10, 79);
             this.outputField.Name = "outputField";
-            this.outputField.Size = new System.Drawing.Size(631, 300);
+            this.outputField.Size = new System.Drawing.Size(552, 319);
             this.outputField.TabIndex = 7;
             this.outputField.TabStop = false;
             // 
             // treeView1
             // 
-            this.treeView1.Location = new System.Drawing.Point(19, 18);
+            this.treeView1.Location = new System.Drawing.Point(17, 19);
             this.treeView1.Margin = new System.Windows.Forms.Padding(4);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(592, 263);
+            this.treeView1.Size = new System.Drawing.Size(518, 279);
             this.treeView1.TabIndex = 9;
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeView1_NodeMouseDoubleClick);
             // 
@@ -118,7 +118,7 @@ namespace OneNotePageSearcher
             // 
             this.etaLabel.AutoSize = true;
             this.etaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.etaLabel.Location = new System.Drawing.Point(18, 104);
+            this.etaLabel.Location = new System.Drawing.Point(16, 110);
             this.etaLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.etaLabel.Name = "etaLabel";
             this.etaLabel.Size = new System.Drawing.Size(123, 16);
@@ -130,7 +130,7 @@ namespace OneNotePageSearcher
             // 
             this.progressLabel.AutoSize = true;
             this.progressLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.progressLabel.Location = new System.Drawing.Point(18, 61);
+            this.progressLabel.Location = new System.Drawing.Point(16, 65);
             this.progressLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.progressLabel.Name = "progressLabel";
             this.progressLabel.Size = new System.Drawing.Size(74, 16);
@@ -140,10 +140,10 @@ namespace OneNotePageSearcher
             // 
             // indexProgressBar
             // 
-            this.indexProgressBar.Location = new System.Drawing.Point(21, 144);
+            this.indexProgressBar.Location = new System.Drawing.Point(18, 153);
             this.indexProgressBar.Margin = new System.Windows.Forms.Padding(4);
             this.indexProgressBar.Name = "indexProgressBar";
-            this.indexProgressBar.Size = new System.Drawing.Size(592, 28);
+            this.indexProgressBar.Size = new System.Drawing.Size(518, 30);
             this.indexProgressBar.TabIndex = 7;
             this.indexProgressBar.Visible = false;
             // 
@@ -154,20 +154,20 @@ namespace OneNotePageSearcher
             this.resultGridView.AllowUserToResizeRows = false;
             this.resultGridView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCellsExceptHeader;
             this.resultGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.resultGridView.Location = new System.Drawing.Point(19, 18);
+            this.resultGridView.Location = new System.Drawing.Point(17, 19);
             this.resultGridView.Margin = new System.Windows.Forms.Padding(4);
             this.resultGridView.Name = "resultGridView";
             this.resultGridView.ReadOnly = true;
-            this.resultGridView.Size = new System.Drawing.Size(592, 263);
+            this.resultGridView.Size = new System.Drawing.Size(518, 279);
             this.resultGridView.TabIndex = 3;
             this.resultGridView.Visible = false;
             this.resultGridView.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.ResultGridView_CellContentDoubleClick);
             // 
             // exitButton
             // 
-            this.exitButton.Location = new System.Drawing.Point(568, 380);
+            this.exitButton.Location = new System.Drawing.Point(497, 404);
             this.exitButton.Name = "exitButton";
-            this.exitButton.Size = new System.Drawing.Size(75, 23);
+            this.exitButton.Size = new System.Drawing.Size(66, 24);
             this.exitButton.TabIndex = 7;
             this.exitButton.Text = "Exit";
             this.exitButton.UseVisualStyleBackColor = true;
@@ -175,9 +175,9 @@ namespace OneNotePageSearcher
             // 
             // optionButton
             // 
-            this.optionButton.Location = new System.Drawing.Point(12, 380);
+            this.optionButton.Location = new System.Drawing.Point(10, 404);
             this.optionButton.Name = "optionButton";
-            this.optionButton.Size = new System.Drawing.Size(75, 23);
+            this.optionButton.Size = new System.Drawing.Size(66, 24);
             this.optionButton.TabIndex = 8;
             this.optionButton.Text = "Option";
             this.optionButton.UseVisualStyleBackColor = true;
@@ -185,14 +185,14 @@ namespace OneNotePageSearcher
             // 
             // SearchGUI
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(655, 414);
+            this.ClientSize = new System.Drawing.Size(573, 440);
             this.Controls.Add(this.optionButton);
             this.Controls.Add(this.exitButton);
             this.Controls.Add(this.outputField);
             this.Controls.Add(this.inputField);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Microsoft YaHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
