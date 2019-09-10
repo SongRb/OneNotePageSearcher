@@ -58,10 +58,10 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>8E709CCBC2444088D9612471BEF02B03589238C9</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>1939FAEFBA4FA0ACD5FE119030DFEFA18E3057C5</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>OneNotePageSearcher_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>OneNotePageSearcher_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -123,6 +123,7 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="App.config" />
+    <None Include="OneNotePageSearcher_1_TemporaryKey.pfx" />
     <None Include="OneNotePageSearcher_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
