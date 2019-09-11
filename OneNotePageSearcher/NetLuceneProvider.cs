@@ -7,11 +7,12 @@ using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
+using Lucene.Net;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
+using Lucene.Net.Util;
 using Directory = Lucene.Net.Store.Directory;
-using Version = Lucene.Net.Util.Version;
-
+using Lucene.Net.QueryParsers.Analyzing;
 
 namespace OneNotePageSearcher
 {
@@ -30,11 +31,13 @@ namespace OneNotePageSearcher
 
         private Directory indexDirectory = null;
 
+        private LuceneVersion AppLuceneVersion = LuceneVersion.LUCENE_48;
+
         public bool debug;
 
         public NetLuceneProvider(bool overwrite)
         {
-            _analyzer = new StandardAnalyzer(Version.LUCENE_30);
+            _analyzer = new StandardAnalyzer(AppLuceneVersion);
         }
 
         public void SetWorkingDirectory()
@@ -45,7 +48,7 @@ namespace OneNotePageSearcher
         public void SetUpReader()
         {
             SetWorkingDirectory();
-            var indexReader = IndexReader.Open(indexDirectory, true);
+            var indexReader = DirectoryReader.Open(indexDirectory);
             _maxDoc = indexReader.MaxDoc;
             if (debug) Console.WriteLine(_maxDoc);
             indexReader.Dispose();
@@ -55,20 +58,15 @@ namespace OneNotePageSearcher
         public void SetUpWriter(bool overwrite = true)
         {
             SetWorkingDirectory();
-            try
-            {
-                writer = new IndexWriter(indexDirectory, _analyzer, overwrite, IndexWriter.MaxFieldLength.UNLIMITED);
-            }
-            catch (Exception e)
-            {
-                writer = new IndexWriter(indexDirectory, _analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
-            }
+            var indexConfig = new IndexWriterConfig(AppLuceneVersion, _analyzer);
+            indexConfig.OpenMode = overwrite ? OpenMode.CREATE : OpenMode.CREATE_OR_APPEND;
+
+            writer = new IndexWriter(indexDirectory, indexConfig);
         }
 
         public void CloseWriter()
         {
-            writer.Optimize();
-            writer.Flush(true, true, true);
+            writer.Flush(true, true);
             writer.Dispose();
             indexDirectory.Dispose();
         }
@@ -93,17 +91,23 @@ namespace OneNotePageSearcher
 
         public HashSet<String> GetAllValuesByField(string field_name)
         {
-            IndexReader reader = IndexReader.Open(indexDirectory, true);
-            TermEnum terms = reader.Terms();
-            HashSet<String> uniqueTerms = new HashSet<String>();
-            while (terms.Next())
+            HashSet<String> uniqueTerms = new HashSet<string>();
+            if (DirectoryReader.IndexExists(indexDirectory))
             {
-                var term = terms.Term;
-                if (term.Field.Equals(field_name))
+                var reader = DirectoryReader.Open(indexDirectory);
+                for (int i = 0; i < reader.MaxDoc; i++)
                 {
-                    uniqueTerms.Add(term.Text);
+                    //if (reader.isDeleted(i))
+                    //    continue;
+                    HashSet<string> field_names = new HashSet<string>();
+                    field_names.Add(field_name);
+                    Document doc = reader.Document(i, field_names);
+                    String field_value = doc.Get(field_name);
+                    uniqueTerms.Add(field_value);
+
                 }
             }
+
             return uniqueTerms;
         }
 
@@ -119,9 +123,9 @@ namespace OneNotePageSearcher
         {
             SetWorkingDirectory();
             var resultList = new List<SearchResult>();
-
-            var searcher = new IndexSearcher(indexDirectory);
-            var parser = new QueryParser(Version.LUCENE_30, "postBody", _analyzer);
+            var indexReader = DirectoryReader.Open(indexDirectory);
+            var searcher = new IndexSearcher(indexReader);
+            var parser = new AnalyzingQueryParser(AppLuceneVersion, "postBody", _analyzer);
 
             var query = parser.Parse(q);
             var hits = searcher.Search(query, _searchLimit);
@@ -144,7 +148,7 @@ namespace OneNotePageSearcher
             }
 
             //Clean up everything
-            searcher.Dispose();
+            //searcher.Dispose();
             indexDirectory.Dispose();
 
             return resultList;

@@ -311,7 +311,7 @@ namespace OneNotePageSearcher
 
             // We also want to find page that is updated and created
             // DateTime.Now.ToString("yyyy’-‘MM’-‘dd’T’HH’:’mm’:’ss.fffK")
-            string oldTime = UserSettings.ReadSetting("LastIndexTime") ?? lucene.GetLastUpdatedTime();
+            string oldTime = UserSettings.ReadSetting("LastIndexTime") ?? "1978-06-18T08:56:47.000Z";
             if (isDebug) Console.WriteLine(oldTime);
             foreach (var n in pageMetaInfo.Values)
             {

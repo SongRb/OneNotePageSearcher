@@ -33,7 +33,7 @@ namespace OneNotePageSearcher
             this.TopMost = false;
             this.Owner.Enabled = false;
         }
-
+        
         public static string ReadSetting(string key)
         {
             string result;
