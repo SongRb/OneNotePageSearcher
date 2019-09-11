@@ -83,17 +83,9 @@ namespace OneNotePageSearcher
             this.currentIndexPathLabel.Text = "Index path:\n" + this.indexPath;
 
             var useCacheStr = ReadSetting("use_cache") ?? "true";
+            var useCache = (useCacheStr == "true");
+            (this.useCache, this.idxTimeBtn.Checked, this.idxCleanBtn.Checked) = (useCache, useCache, !useCache);
 
-            if (useCacheStr == "true")
-            {
-                this.useCache = true;
-                this.idxTimeBtn.Checked = true;
-            }
-            else
-            {
-                this.useCache = false;
-                this.idxTimeBtn.Checked = false;
-            }
             this.indexMode = ReadSetting("index_mode") ?? GlobalVar.IndexByParagraphMode;
             if (this.indexMode == GlobalVar.IndexByParagraphMode) this.idxParaBtn.Checked = true;
             else this.idxPageBtn.Checked = true;
@@ -104,8 +96,14 @@ namespace OneNotePageSearcher
             if (this.treeViewRatioButton.Checked) this.viewMode = GlobalVar.TreeViewMode;
             else this.viewMode = GlobalVar.ListViewMode;
 
+            this.viewMode = this.treeViewRatioButton.Checked ? GlobalVar.TreeViewMode : GlobalVar.ListViewMode;
+            this.indexMode = this.idxPageBtn.Checked ? GlobalVar.IndexByPageMode : GlobalVar.IndexByParagraphMode;
+            this.useCache = this.idxTimeBtn.Checked;
+
             AddUpdateAppSettings("view_mode", this.viewMode);
             AddUpdateAppSettings("index_path", this.indexPath);
+            AddUpdateAppSettings("index_mode", this.indexMode);
+            AddUpdateAppSettings("use_cache", this.useCache ? "true" : "false");
             reloadSettings();
             this.Owner.Enabled = true;
             this.Close();

@@ -97,8 +97,6 @@ namespace OneNotePageSearcher
                 var reader = DirectoryReader.Open(indexDirectory);
                 for (int i = 0; i < reader.MaxDoc; i++)
                 {
-                    //if (reader.isDeleted(i))
-                    //    continue;
                     HashSet<string> field_names = new HashSet<string>();
                     field_names.Add(field_name);
                     Document doc = reader.Document(i, field_names);

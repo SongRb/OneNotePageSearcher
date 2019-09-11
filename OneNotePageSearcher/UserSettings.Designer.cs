@@ -34,6 +34,7 @@ namespace OneNotePageSearcher
             this.treeViewRatioButton = new System.Windows.Forms.RadioButton();
             this.listViewRatioButton = new System.Windows.Forms.RadioButton();
             this.AppearanceGroup = new System.Windows.Forms.GroupBox();
+            this.panel3 = new System.Windows.Forms.Panel();
             this.confirmSaveSettingsBtn = new System.Windows.Forms.Button();
             this.indexGroup = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -45,12 +46,11 @@ namespace OneNotePageSearcher
             this.currentIndexPathLabel = new System.Windows.Forms.Label();
             this.indexDirBtn = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.panel3 = new System.Windows.Forms.Panel();
             this.AppearanceGroup.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.indexGroup.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // treeViewRatioButton
@@ -85,6 +85,15 @@ namespace OneNotePageSearcher
             this.AppearanceGroup.TabIndex = 2;
             this.AppearanceGroup.TabStop = false;
             this.AppearanceGroup.Text = "Appearance";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.listViewRatioButton);
+            this.panel3.Controls.Add(this.treeViewRatioButton);
+            this.panel3.Location = new System.Drawing.Point(6, 15);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(83, 50);
+            this.panel3.TabIndex = 10;
             // 
             // confirmSaveSettingsBtn
             // 
@@ -198,15 +207,6 @@ namespace OneNotePageSearcher
             this.indexDirBtn.UseVisualStyleBackColor = true;
             this.indexDirBtn.Click += new System.EventHandler(this.indexDirBtn_Click);
             // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.listViewRatioButton);
-            this.panel3.Controls.Add(this.treeViewRatioButton);
-            this.panel3.Location = new System.Drawing.Point(6, 15);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(83, 50);
-            this.panel3.TabIndex = 10;
-            // 
             // UserSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -223,13 +223,13 @@ namespace OneNotePageSearcher
             this.Name = "UserSettings";
             this.Text = "UserSettings";
             this.AppearanceGroup.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.indexGroup.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
