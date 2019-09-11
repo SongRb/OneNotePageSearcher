@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Documents;
+using Lucene.Net.Analysis.Cn.Smart;
 using Lucene.Net.Index;
-using Lucene.Net.QueryParsers;
-using Lucene.Net;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
@@ -19,9 +17,6 @@ namespace OneNotePageSearcher
     internal class NetLuceneProvider
     {
         public string _indexPath;
-
-        private readonly string _indexByDocumentPath = "LuceneIndex";
-
         private int _maxDoc;
         private readonly Analyzer _analyzer;
 
@@ -37,7 +32,7 @@ namespace OneNotePageSearcher
 
         public NetLuceneProvider(bool overwrite)
         {
-            _analyzer = new StandardAnalyzer(AppLuceneVersion);
+            _analyzer = new SmartChineseAnalyzer(AppLuceneVersion, true);
         }
 
         public void SetWorkingDirectory()
@@ -155,9 +150,9 @@ namespace OneNotePageSearcher
         private void AddTextToIndex(string pageID, string paraID, string text)
         {
             var doc = new Document();
-            doc.Add(new Field("pageID", pageID, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            doc.Add(new Field("paraID", paraID, Field.Store.YES, Field.Index.NOT_ANALYZED));
-            doc.Add(new Field("postBody", text, Field.Store.YES, Field.Index.ANALYZED));
+            doc.Add(new StringField("pageID", pageID, Field.Store.YES));
+            doc.Add(new StringField("paraID", paraID, Field.Store.YES));
+            doc.Add(new TextField("postBody", text, Field.Store.YES));
             writer.AddDocument(doc);
         }
 

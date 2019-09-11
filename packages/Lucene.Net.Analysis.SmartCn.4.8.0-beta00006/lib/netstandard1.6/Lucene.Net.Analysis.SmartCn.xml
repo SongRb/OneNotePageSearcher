@@ -1,0 +1,839 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lucene.Net.Analysis.SmartCn</name>
+    </assembly>
+    <members>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.AnalyzerProfile">
+            <summary>
+            Manages analysis data configuration for <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/>
+            <para/>
+            <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> has a built-in dictionary and stopword list out-of-box.
+            <para/>
+            NOTE: To use an alternate dicationary than the built-in one, put the "bigramdict.dct" and
+            "coredict.dct" files in a subdirectory of your application named "analysis-data". This subdirectory
+            can be placed in any directory up to and including the root directory (if the OS permission allows).
+            To place the files in an alternate location, set an environment variable named "analysis.data.dir"
+            with the name of the directory the "bigramdict.dct" and "coredict.dct" files can be located within.
+            <para/>
+            The default "bigramdict.dct" and "coredict.dct" files can be found at: 
+            <a href="https://issues.apache.org/jira/browse/LUCENE-1629">https://issues.apache.org/jira/browse/LUCENE-1629</a>.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.AnalyzerProfile.ANALYSIS_DATA_DIR">
+            <summary>
+            Global indicating the configured analysis data directory
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.CharType">
+            <summary>
+            Internal <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> character type constants.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.DELIMITER">
+            <summary>
+            Punctuation Characters
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.LETTER">
+            <summary>
+            Letters
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.DIGIT">
+            <summary>
+            Numeric Digits
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.HANZI">
+            <summary>
+            Han Ideographs
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.SPACE_LIKE">
+            <summary>
+            Characters that act as a space
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.FULLWIDTH_LETTER">
+            <summary>
+            Full-Width letters
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.FULLWIDTH_DIGIT">
+            <summary>
+            Full-Width alphanumeric characters
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.CharType.OTHER">
+            <summary>
+            Other (not fitting any of the other categories)
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary">
+            <summary>
+            <para>
+            <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> abstract dictionary implementation.
+            </para>
+            <para>
+            Contains methods for dealing with GB2312 encoding.
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.GB2312_FIRST_CHAR">
+            <summary>
+            First Chinese Character in GB2312 (15 * 94)
+            Characters in GB2312 are arranged in a grid of 94 * 94, 0-14 are unassigned or punctuation.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.GB2312_CHAR_NUM">
+            <summary>
+            Last Chinese Character in GB2312 (87 * 94). 
+            Characters in GB2312 are arranged in a grid of 94 * 94, 88-94 are unassigned.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.CHAR_NUM_IN_FILE">
+            <summary>
+            Dictionary data contains 6768 Chinese characters with frequency statistics.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.GetCCByGB2312Id(System.Int32)">
+            <summary>
+            <para>
+            Transcode from GB2312 ID to Unicode
+            </para>
+            <para>
+            GB2312 is divided into a 94 * 94 grid, containing 7445 characters consisting of 6763 Chinese characters and 682 symbols.
+            Some regions are unassigned (reserved).
+            </para>
+            </summary>
+            <param name="ccid">GB2312 id</param>
+            <returns>unicode String</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.GetGB2312Id(System.Char)">
+            <summary>
+            Transcode from Unicode to GB2312
+            </summary>
+            <param name="ch">input character in Unicode, or character in Basic Latin range.</param>
+            <returns>position in GB2312</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.Hash1(System.Char)">
+            <summary>
+            32-bit FNV Hash Function
+            </summary>
+            <param name="c">input character</param>
+            <returns>hashcode</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.Hash1(System.Char[])">
+            <summary>
+            32-bit FNV Hash Function
+            </summary>
+            <param name="carray">character array</param>
+            <returns>hashcode</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.Hash2(System.Char)">
+            <summary>
+            djb2 hash algorithm，this algorithm (k=33) was first reported by dan
+            bernstein many years ago in comp.lang.c. another version of this algorithm
+            (now favored by bernstein) uses xor: hash(i) = hash(i - 1) * 33 ^ str[i];
+            the magic of number 33 (why it works better than many other constants,
+            prime or not) has never been adequately explained.
+            </summary>
+            <param name="c">character</param>
+            <returns>hashcode</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.AbstractDictionary.Hash2(System.Char[])">
+            <summary>
+            djb2 hash algorithm，this algorithm (k=33) was first reported by dan
+            bernstein many years ago in comp.lang.c. another version of this algorithm
+            (now favored by bernstein) uses xor: hash(i) = hash(i - 1) * 33 ^ str[i];
+            the magic of number 33 (why it works better than many other constants,
+            prime or not) has never been adequately explained.
+            </summary>
+            <param name="carray">character array</param>
+            <returns>hashcode</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.BigramDictionary">
+            <summary>
+            SmartChineseAnalyzer Bigram dictionary.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.BigramDictionary.bigramHashTable">
+            <summary>
+            The word associations are stored as FNV1 hashcodes, which have a small probability of collision, but save memory.  
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.BigramDictionary.LoadFromFile(System.String)">
+            <summary>
+            Load the datafile into this <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.BigramDictionary"/>
+            </summary>
+            <param name="dctFilePath">dctFilePath path to the Bigramdictionary (bigramdict.dct)</param>
+            <exception cref="T:System.IO.IOException">If there is a low-level I/O error</exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.BigramDictionary.GetBigramItemIndex(System.Char[])">
+            <summary>
+            lookup the index into the frequency array.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph">
+            <summary>
+            Graph representing possible token pairs (bigrams) at each start offset in the sentence.
+            <para>
+            For each start offset, a list of possible token pairs is stored.
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph.GenerateBiSegGraph(Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph)">
+            <summary>
+            Generate a <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph"/> based upon a <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph.IsToExist(System.Int32)">
+            <summary>
+            Returns <c>true</c> if their is a list of token pairs at this offset (index of the second token)
+            </summary>
+            <param name="to">index of the second token in the token pair</param>
+            <returns><c>true</c> if a token pair exists</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph.GetToList(System.Int32)">
+            <summary>
+            Return a <see cref="T:IList{SegTokenPair}"/> of all token pairs at this offset (index of the second token)
+            </summary>
+            <param name="to">index of the second token in the token pair</param>
+            <returns><see cref="T:IList{SegTokenPair}"/> of token pairs. </returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph.AddSegTokenPair(Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair)">
+            <summary>
+            Add a <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair"/>
+            </summary>
+            <param name="tokenPair"><see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair"/></param>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph.ToCount">
+            <summary>
+            Get the number of <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair"/> entries in the table.
+            </summary>
+            <returns>number of <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair"/> entries</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph.GetShortPath">
+            <summary>
+            Find the shortest path with the Viterbi algorithm.
+            </summary>
+            <returns><see cref="T:IList{SegToken}"/></returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.HHMMSegmenter">
+            <summary>
+            Finds the optimal segmentation of a sentence into Chinese words
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.HHMMSegmenter.CreateSegGraph(System.String)">
+            <summary>
+            Create the <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph"/> for a sentence.
+            </summary>
+            <param name="sentence">input sentence, without start and end markers</param>
+            <returns><see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph"/> corresponding to the input sentence.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.HHMMSegmenter.GetCharTypes(System.String)">
+            <summary>
+            Get the character types for every character in a sentence.
+            </summary>
+            <param name="sentence">input sentence</param>
+            <returns>array of character types corresponding to character positions in the sentence</returns>
+            <seealso cref="M:Lucene.Net.Analysis.Cn.Smart.Utility.GetCharType(System.Char)"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.HHMMSegmenter.Process(System.String)">
+            <summary>
+            Return a list of <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/> representing the best segmentation of a sentence
+            </summary>
+            <param name="sentence">input sentence</param>
+            <returns>best segmentation as a <see cref="T:IList{SegToken}"/></returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.PathNode">
+            <summary>
+            SmartChineseAnalyzer internal node representation
+            <para>
+            Used by <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.BiSegGraph"/> to maximize the segmentation with the Viterbi algorithm.
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.PathNode.GetHashCode">
+            <summary>
+            <see cref="M:System.Object.GetHashCode"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.PathNode.Equals(System.Object)">
+            <summary>
+            <see cref="M:System.Object.Equals(System.Object)"/>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph">
+            <summary>
+            Graph representing possible tokens at each start offset in the sentence.
+            <para>
+            For each start offset, a list of possible tokens is stored.
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph.tokenListTable">
+            <summary>
+            Map of start offsets to <see cref="T:IList{SegToken}"/> of tokens at that position
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph.IsStartExist(System.Int32)">
+            <summary>
+            Returns <c>true</c> if a mapping for the specified start offset exists
+            </summary>
+            <param name="s">startOffset</param>
+            <returns><c>true</c> if there are tokens for the startOffset</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph.GetStartList(System.Int32)">
+            <summary>
+             Get the list of tokens at the specified start offset
+            </summary>
+            <param name="s">startOffset</param>
+            <returns><see cref="T:IList{SegToken}"/> of tokens at the specified start offset.</returns>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph.MaxStart">
+            <summary>
+            Get the highest start offset in the map. Returns maximum start offset, or -1 if the map is empty.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph.MakeIndex">
+            <summary>
+            Set the <see cref="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.Index"/> for each token, based upon its order by startOffset. 
+            </summary>
+            <returns>a <see cref="T:IList{SegToken}"/> of these ordered tokens.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph.AddToken(Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken)">
+            <summary>
+            Add a <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/> to the mapping, creating a new mapping at the token's startOffset if one does not exist. 
+            </summary>
+            <param name="token">token <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/>.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph.ToTokenList">
+            <summary>
+            Return a <see cref="T:IList{SegToken}"/> of all tokens in the map, ordered by startOffset.
+            </summary>
+            <returns><see cref="T:IList{SegToken}"/> of all tokens in the map.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken">
+            <summary>
+            SmartChineseAnalyzer internal token
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.CharArray">
+            <summary>
+            Character array containing token text
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.StartOffset">
+            <summary>
+            start offset into original sentence
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.EndOffset">
+            <summary>
+            end offset into original sentence
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.WordType">
+            <summary>
+            <see cref="T:Lucene.Net.Analysis.Cn.Smart.WordType"/> of the text
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.Weight">
+            <summary>
+            word frequency
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.Index">
+            <summary>
+            during segmentation, this is used to store the index of the token in the token list table
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.#ctor(System.Char[],System.Int32,System.Int32,Lucene.Net.Analysis.Cn.Smart.WordType,System.Int32)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/> from a character array.
+            </summary>
+            <param name="idArray">character array containing text</param>
+            <param name="start">start offset of <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/> in original sentence</param>
+            <param name="end">end offset of <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/> in original sentence</param>
+            <param name="wordType"><see cref="T:Lucene.Net.Analysis.Cn.Smart.WordType"/> of the text</param>
+            <param name="weight">word frequency</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.GetHashCode">
+            <summary>
+            <see cref="M:System.Object.GetHashCode"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken.Equals(System.Object)">
+            <summary>
+            <see cref="M:System.Object.Equals(System.Object)"/>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenFilter">
+            <summary>
+            <para>
+            Filters a <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/> by converting full-width latin to half-width, then lowercasing latin.
+            Additionally, all punctuation is converted into <see cref="F:Lucene.Net.Analysis.Cn.Smart.Utility.COMMON_DELIMITER"/>
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenFilter.Filter(Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken)">
+            <summary>
+            Filter an input <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/>
+            <para>
+            Full-width latin will be converted to half-width, then all latin will be lowercased.
+            All punctuation is converted into <see cref="F:Lucene.Net.Analysis.Cn.Smart.Utility.COMMON_DELIMITER"/>
+            </para>
+            </summary>
+            <param name="token">Input <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/>.</param>
+            <returns>Normalized <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/>.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair">
+            <summary>
+            A pair of tokens in <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph"/>
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair.From">
+            <summary>
+            index of the first token in <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph"/>
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair.To">
+            <summary>
+            index of the second token in <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegGraph"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair.GetHashCode">
+            <summary>
+            <see cref="M:System.Object.GetHashCode"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenPair.Equals(System.Object)">
+            <summary>
+            <see cref="M:System.Object.Equals(System.Object)"/>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary">
+            <summary>
+            SmartChineseAnalyzer Word Dictionary
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.PRIME_INDEX_LENGTH">
+            <summary>
+            Large prime number for hash function
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.wordIndexTable">
+            <summary>
+            wordIndexTable guarantees to hash all Chinese characters in Unicode into 
+            PRIME_INDEX_LENGTH array. There will be conflict, but in reality this 
+            program only handles the 6768 characters found in GB2312 plus some 
+            ASCII characters. Therefore in order to guarantee better precision, it is
+            necessary to retain the original symbol in the charIndexTable.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.wordItem_charArrayTable">
+            <summary>
+            To avoid taking too much space, the data structure needed to store the 
+            lexicon requires two multidimensional arrays to store word and frequency.
+            Each word is placed in a char[]. Each char represents a Chinese char or 
+            other symbol.  Each frequency is put into an int. These two arrays 
+            correspond to each other one-to-one. Therefore, one can use 
+            wordItem_charArrayTable[i][j] to look up word from lexicon, and 
+            wordItem_frequencyTable[i][j] to look up the corresponding frequency. 
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.GetInstance">
+            <summary>
+            Get the singleton dictionary instance.
+            </summary>
+            <returns>singleton</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.Load(System.String)">
+            <summary>
+            Attempt to load dictionary from provided directory, first trying coredict.mem, failing back on coredict.dct
+            </summary>
+            <param name="dctFileRoot">path to dictionary directory</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.Load">
+            <summary>
+            Load coredict.mem internally from the jar file.
+            </summary>
+            <exception cref="T:System.IO.IOException">If there is a low-level I/O error.</exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.LoadMainDataFromFile(System.String)">
+            <summary>
+            Load the datafile into this <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary"/>
+            </summary>
+            <param name="dctFilePath">path to word dictionary (coredict.dct)</param>
+            <returns>number of words read</returns>
+            <exception cref="T:System.IO.IOException">If there is a low-level I/O error.</exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.ExpandDelimiterData">
+            <summary>
+            The original lexicon puts all information with punctuation into a 
+            chart (from 1 to 3755). Here it then gets expanded, separately being
+            placed into the chart that has the corresponding symbol.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.MergeSameWords">
+            <summary>
+            since we aren't doing POS-tagging, merge the frequencies for entries of the same word (with different POS)
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.SetTableIndex(System.Char,System.Int32)">
+            <summary>
+            Calculate character <paramref name="c"/>'s position in hash table, 
+            then initialize the value of that position in the address table.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.FindInTable(System.Int16,System.Char[])">
+            <summary>
+            Look up the text string corresponding with the word char array,
+            and return the position of the word list.
+            </summary>
+            <param name="knownHashIndex">
+            already figure out position of the first word
+            symbol charArray[0] in hash table. If not calculated yet, can be
+            replaced with function int findInTable(char[] charArray).
+            </param>
+            <param name="charArray">look up the char array corresponding with the word.</param>
+            <returns>word location in word array.  If not found, then return -1.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.GetPrefixMatch(System.Char[])">
+            <summary>
+            Find the first word in the dictionary that starts with the supplied prefix
+            </summary>
+            <param name="charArray">input prefix</param>
+            <returns>index of word, or -1 if not found</returns>
+            <seealso cref="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.GetPrefixMatch(System.Char[],System.Int32)"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.GetPrefixMatch(System.Char[],System.Int32)">
+            <summary>
+            Find the nth word in the dictionary that starts with the supplied prefix
+            </summary>
+            <param name="charArray">input prefix</param>
+            <param name="knownStart">relative position in the dictionary to start</param>
+            <returns>index of word, or -1 if not found</returns>
+            <seealso cref="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.GetPrefixMatch(System.Char[])"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.GetFrequency(System.Char[])">
+            <summary>
+            Get the frequency of a word from the dictionary
+            </summary>
+            <param name="charArray">input word</param>
+            <returns>word frequency, or zero if the word is not found</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Hhmm.WordDictionary.IsEqual(System.Char[],System.Int32)">
+            <summary>
+            Return <c>true</c> if the dictionary entry at itemIndex for table charArray[0] is charArray
+            </summary>
+            <param name="charArray">input word</param>
+            <param name="itemIndex">item index for table charArray[0]</param>
+            <returns><c>true</c> if the entry exists</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizer">
+            <summary>
+            Tokenizer for Chinese or mixed Chinese-English text.
+            <para/>
+            The analyzer uses probabilistic knowledge to find the optimal word segmentation for Simplified Chinese text.
+            The text is first broken into sentences, then each sentence is segmented into words.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizer.sentenceProto">
+            <summary>used for breaking the text into sentences</summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizer.#ctor(System.IO.TextReader)">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizer"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizer.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,System.IO.TextReader)">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizer"/>, supplying the <see cref="T:Lucene.Net.Util.AttributeSource.AttributeFactory"/>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizerFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizer"/>
+            <para/>
+            Note: this class will currently emit tokens for punctuation. So you should either add
+            a <see cref="T:Lucene.Net.Analysis.Miscellaneous.WordDelimiterFilter"/> after to remove these (with concatenate off), or use the 
+            SmartChinese stoplist with a StopFilterFactory via:
+            <code>words="org/apache/lucene/analysis/cn/smart/stopwords.txt"</code>
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizerFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.HMMChineseTokenizerFactory"/> 
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.SentenceTokenizer">
+            <summary>
+            Tokenizes input text into sentences.
+            <para>
+            The output tokens can then be broken into words with <see cref="T:Lucene.Net.Analysis.Cn.Smart.WordTokenFilter"/>
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.SentenceTokenizer.PUNCTION">
+            <summary>
+            End of sentence punctuation: 。，！？；,!?;
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer">
+            <summary>
+            <para>
+            <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> is an analyzer for Chinese or mixed Chinese-English text.
+            The analyzer uses probabilistic knowledge to find the optimal word segmentation for Simplified Chinese text.
+            The text is first broken into sentences, then each sentence is segmented into words.
+            </para>
+            <para>
+            Segmentation is based upon the <a href="http://en.wikipedia.org/wiki/Hidden_Markov_Model">Hidden Markov Model</a>.
+            A large training corpus was used to calculate Chinese word frequency probability.
+            </para>
+            <para>
+            This analyzer requires a dictionary to provide statistical data. 
+            <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> has an included dictionary out-of-box.
+            </para>
+            <para>
+            The included dictionary data is from <a href="http://www.ictclas.org">ICTCLAS1.0</a>.
+            Thanks to ICTCLAS for their hard work, and for contributing the data under the Apache 2 License!
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer.GetDefaultStopSet">
+            <summary>
+            Returns an unmodifiable instance of the default stop-words set.
+            </summary>
+            <returns>An unmodifiable instance of the default stop-words set.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer.DefaultSetHolder">
+            <summary>
+            Atomically loads the DEFAULT_STOP_SET in a lazy fashion once the outer class 
+            accesses the static final set the first time.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/>, using the default stopword list.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion,System.Boolean)">
+            <summary>
+            <para>
+            Create a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/>, optionally using the default stopword list.
+            </para>
+            <para>
+            The included default stopword list is simply a list of punctuation.
+            If you do not use this list, punctuation will not be removed from the text!
+            </para>
+            </summary>
+            <param name="matchVersion"></param>
+            <param name="useDefaultStopWords"><c>true</c> to use the default stopword list.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion,Lucene.Net.Analysis.Util.CharArraySet)">
+            <summary>
+            <para>
+            Create a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/>, using the provided <see cref="T:Lucene.Net.Analysis.Util.CharArraySet"/> of stopwords.
+            </para>
+            <para>
+            Note: the set should include punctuation, unless you want to index punctuation!
+            </para>
+            </summary>
+            <param name="matchVersion"></param>
+            <param name="stopWords"><see cref="T:Lucene.Net.Analysis.Util.CharArraySet"/> of stopwords to use.</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseSentenceTokenizerFactory">
+            <summary>
+            Factory for the <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> <see cref="T:Lucene.Net.Analysis.Cn.Smart.SentenceTokenizer"/>
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.SmartChineseSentenceTokenizerFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseSentenceTokenizerFactory"/>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseWordTokenFilterFactory">
+            <summary>
+            Factory for the <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> <see cref="T:Lucene.Net.Analysis.Cn.Smart.WordTokenFilter"/>
+            <para>
+            Note: this class will currently emit tokens for punctuation. So you should either add
+            a <see cref="T:Lucene.Net.Analysis.Miscellaneous.WordDelimiterFilter"/> after to remove these (with concatenate off), or use the 
+            SmartChinese stoplist with a <see cref="T:Lucene.Net.Analysis.Core.StopFilterFactory"/> via:
+            <code>words="org/apache/lucene/analysis/cn/smart/stopwords.txt"</code>
+            </para>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.SmartChineseWordTokenFilterFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseWordTokenFilterFactory"/>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.Utility">
+            <summary>
+            <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> utility constants and methods
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Utility.COMMON_DELIMITER">
+            <summary>
+            Delimiters will be filtered to this character by <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegTokenFilter"/>
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Utility.SPACES">
+            <summary>
+            Space-like characters that need to be skipped: such as space, tab, newline, carriage return.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.Utility.MAX_FREQUENCE">
+            <summary>
+            Maximum bigram frequency (used in the smoothing function).
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Utility.CompareArray(System.Char[],System.Int32,System.Char[],System.Int32)">
+            <summary>
+            Compare two arrays starting at the specified offsets.
+            </summary>
+            <param name="larray">left array</param>
+            <param name="lstartIndex">start offset into <paramref name="larray"/></param>
+            <param name="rarray">right array</param>
+            <param name="rstartIndex">start offset into <paramref name="rarray"/></param>
+            <returns>0 if the arrays are equal，1 if <paramref name="larray"/> &gt; 
+            <paramref name="rarray"/>, -1 if <paramref name="larray"/> &lt; <paramref name="rarray"/></returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Utility.CompareArrayByPrefix(System.Char[],System.Int32,System.Char[],System.Int32)">
+            <summary>
+            Compare two arrays, starting at the specified offsets, but treating <paramref name="shortArray"/> as a prefix to <paramref name="longArray"/>.
+            As long as <paramref name="shortArray"/> is a prefix of <paramref name="longArray"/>, return 0.
+            Otherwise, behave as <see cref="M:Lucene.Net.Analysis.Cn.Smart.Utility.CompareArray(System.Char[],System.Int32,System.Char[],System.Int32)"/>.
+            </summary>
+            <param name="shortArray">prefix array</param>
+            <param name="shortIndex">offset into <paramref name="shortArray"/></param>
+            <param name="longArray">long array (word)</param>
+            <param name="longIndex">offset into <paramref name="longArray"/></param>
+            <returns>0 if <paramref name="shortArray"/> is a prefix of <paramref name="longArray"/>, 
+            otherwise act as <see cref="M:Lucene.Net.Analysis.Cn.Smart.Utility.CompareArray(System.Char[],System.Int32,System.Char[],System.Int32)"/>.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.Utility.GetCharType(System.Char)">
+            <summary>
+            Return the internal <see cref="T:Lucene.Net.Analysis.Cn.Smart.CharType"/> constant of a given character. 
+            </summary>
+            <param name="ch">input character</param>
+            <returns>Constant from <see cref="T:Lucene.Net.Analysis.Cn.Smart.CharType"/> describing the character type.</returns>
+            <seealso cref="T:Lucene.Net.Analysis.Cn.Smart.CharType"/>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.WordSegmenter">
+            <summary>
+            Segment a sentence of Chinese text into words.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.WordSegmenter.SegmentSentence(System.String,System.Int32)">
+            <summary>
+            Segment a sentence into words with <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.HHMMSegmenter"/>
+            </summary>
+            <param name="sentence">input sentence</param>
+            <param name="startOffset"> start offset of sentence</param>
+            <returns><see cref="T:System.Collections.Generic.IList`1"/> of <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/>.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.WordSegmenter.ConvertSegToken(Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken,System.String,System.Int32)">
+            <summary>
+            Process a <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/> so that it is ready for indexing.
+            </summary>
+            <param name="st">st input <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/></param>
+            <param name="sentence">associated Sentence</param>
+            <param name="sentenceStartOffset">offset into sentence</param>
+            <returns>Lucene <see cref="T:Lucene.Net.Analysis.Cn.Smart.Hhmm.SegToken"/></returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.WordTokenFilter">
+            <summary>
+            A <see cref="T:Lucene.Net.Analysis.TokenFilter"/> that breaks sentences into words.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Cn.Smart.WordTokenFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            <summary>
+            Construct a new <see cref="T:Lucene.Net.Analysis.Cn.Smart.WordTokenFilter"/>.
+            </summary>
+            <param name="input"><see cref="T:Lucene.Net.Analysis.TokenStream"/> of sentences.</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Cn.Smart.WordType">
+            <summary>
+            Internal <see cref="T:Lucene.Net.Analysis.Cn.Smart.SmartChineseAnalyzer"/> token type constants
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.SENTENCE_BEGIN">
+            <summary>
+            Start of a Sentence
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.SENTENCE_END">
+            <summary>
+            End of a Sentence
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.CHINESE_WORD">
+            <summary>
+            Chinese Word 
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.STRING">
+            <summary>
+            ASCII String
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.NUMBER">
+            <summary>
+            ASCII Alphanumeric
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.DELIMITER">
+            <summary>
+            Punctuation Symbol
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.FULLWIDTH_STRING">
+            <summary>
+            Full-Width String
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Cn.Smart.WordType.FULLWIDTH_NUMBER">
+            <summary>
+            Full-Width Alphanumeric
+            </summary>
+        </member>
+    </members>
+</doc>

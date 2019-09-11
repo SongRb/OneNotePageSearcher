@@ -22,7 +22,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>0.0.2.0</ApplicationVersion>
+    <ApplicationVersion>0.0.4.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -80,11 +80,41 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="ICU4N, Version=60.0.0.0, Culture=neutral, PublicKeyToken=efb17c8e4f0e291b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICU4N.60.1.0-alpha.53\lib\net45\ICU4N.dll</HintPath>
+    </Reference>
+    <Reference Include="ICU4N.Collation, Version=60.0.0.0, Culture=neutral, PublicKeyToken=efb17c8e4f0e291b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICU4N.Collation.60.1.0-alpha.53\lib\net45\ICU4N.Collation.dll</HintPath>
+    </Reference>
+    <Reference Include="ICU4N.CurrencyData, Version=60.0.0.0, Culture=neutral, PublicKeyToken=efb17c8e4f0e291b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICU4N.CurrencyData.60.1.0-alpha.53\lib\net45\ICU4N.CurrencyData.dll</HintPath>
+    </Reference>
+    <Reference Include="ICU4N.LanguageData, Version=60.0.0.0, Culture=neutral, PublicKeyToken=efb17c8e4f0e291b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICU4N.LanguageData.60.1.0-alpha.53\lib\net45\ICU4N.LanguageData.dll</HintPath>
+    </Reference>
+    <Reference Include="ICU4N.RegionData, Version=60.0.0.0, Culture=neutral, PublicKeyToken=efb17c8e4f0e291b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICU4N.RegionData.60.1.0-alpha.53\lib\net45\ICU4N.RegionData.dll</HintPath>
+    </Reference>
+    <Reference Include="ICU4N.Transliterator, Version=60.0.0.0, Culture=neutral, PublicKeyToken=efb17c8e4f0e291b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ICU4N.Transliterator.60.1.0-alpha.53\lib\net45\ICU4N.Transliterator.dll</HintPath>
+    </Reference>
     <Reference Include="Lucene.Net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <HintPath>..\packages\Lucene.Net.4.8.0-beta00006\lib\net45\Lucene.Net.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net.Analysis.Common, Version=4.0.0.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <HintPath>..\packages\Lucene.Net.Analysis.Common.4.8.0-beta00006\lib\net45\Lucene.Net.Analysis.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Analysis.SmartCn, Version=4.0.0.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lucene.Net.Analysis.SmartCn.4.8.0-beta00006\lib\net45\Lucene.Net.Analysis.SmartCn.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Highlighter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lucene.Net.Highlighter.4.8.0-beta00006\lib\net45\Lucene.Net.Highlighter.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.ICU, Version=4.0.0.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lucene.Net.ICU.4.8.0-beta00006\lib\net45\Lucene.Net.ICU.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Memory, Version=4.0.0.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lucene.Net.Memory.4.8.0-beta00006\lib\net45\Lucene.Net.Memory.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net.Queries, Version=4.0.0.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <HintPath>..\packages\Lucene.Net.Queries.4.8.0-beta00006\lib\net45\Lucene.Net.Queries.dll</HintPath>

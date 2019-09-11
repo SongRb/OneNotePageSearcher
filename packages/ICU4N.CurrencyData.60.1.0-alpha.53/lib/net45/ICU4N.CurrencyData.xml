@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ICU4N.CurrencyData</name>
+    </assembly>
+    <members>
+        <member name="F:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.currencyDisplayInfoCache">
+            <summary>
+            Single-item cache for <see cref="T:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo"/> keyed by locale.
+            </summary>
+        </member>
+        <member name="T:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo">
+            <summary>
+            This class performs data loading for currencies and keeps data in lightweight cache.
+            </summary>
+        </member>
+        <member name="F:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.formattingDataCache">
+            <summary>
+            Single-item cache for <see cref="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.GetName(System.String)"/>, <see cref="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.GetSymbol(System.String)"/>, 
+            and <see cref="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.GetFormatInfo(System.String)"/>. Holds data for only one currency. 
+            If another currency is requested, the old cache item is overwritten.
+            </summary>
+        </member>
+        <member name="F:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.narrowSymbolCache">
+            <summary>
+            Single-item cache for <see cref="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.GetNarrowSymbol(System.String)"/>.
+            Holds data for only one currency. If another currency is requested, the old cache item is overwritten.
+            </summary>
+        </member>
+        <member name="F:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.pluralsDataCache">
+            <summary>
+            Single-item cache for <see cref="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.GetPluralName(System.String,System.String)"/>.
+            </summary>
+            <remarks>
+            array[0] is the ISO code.
+            array[1+p] is the plural name where p=(int)standardPlural
+            <para/>
+            Holds data for only one currency. If another currency is requested, the old cache item is overwritten.
+            </remarks>
+        </member>
+        <member name="F:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.parsingDataCache">
+            <summary>
+            Cache for <see cref="P:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.SymbolMap"/> and <see cref="P:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.NameMap"/>.
+            </summary>
+        </member>
+        <member name="F:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.unitPatternsCache">
+            <summary>
+            Cache for <see cref="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.GetUnitPatterns"/>.
+            </summary>
+        </member>
+        <member name="F:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.spacingInfoCache">
+            <summary>
+            Cache for <see cref="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.GetSpacingInfo"/>.
+            </summary>
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.#ctor(ICU4N.Util.ULocale,ICU4N.Impl.ICUResourceBundle,System.Boolean)">
+            START PUBLIC API ///
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.FetchFormattingData(System.String)">
+            END PUBLIC API -- START DATA FRONTEND ///
+        </member>
+        <member name="T:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink">
+            END DATA FRONTEND -- START DATA SINK ///
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink.Put(ICU4N.Impl.UResource.Key,ICU4N.Impl.UResource.Value,System.Boolean)">
+            <summary>
+            The entrypoint method delegates to helper methods for each of the types of tables
+            found in the currency data.
+            </summary>
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink.ConsumeCurrenciesTable(ICU4N.Impl.UResource.Key,ICU4N.Impl.UResource.Value)">
+            <summary>
+             Currencies{
+                 ...
+                 USD{
+                     "US$",        => symbol
+                     "US Dollar",  => display name
+                 }
+                 ...
+                 ESP{
+                     "₧",                  => symbol
+                     "pesseta espanyola",  => display name
+                     {
+                         "¤ #,##0.00",     => currency-specific pattern
+                         ",",              => currency-specific grouping separator
+                         ".",              => currency-specific decimal separator
+                     }
+                 }
+                 ...
+             }
+            </summary>
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink.ConsumeCurrenciesNarrowEntry(ICU4N.Impl.UResource.Key,ICU4N.Impl.UResource.Value)">
+            <summary>
+             Currencies%narrow{
+                 AOA{"Kz"}
+                 ARS{"$"}
+                 ...
+             }
+            </summary>
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink.ConsumeCurrenciesVariantTable(ICU4N.Impl.UResource.Key,ICU4N.Impl.UResource.Value)">
+            <summary>
+             Currencies%variant{
+                 TRY{"TL"}
+             }
+            </summary>
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink.ConsumeCurrencyPluralsTable(ICU4N.Impl.UResource.Key,ICU4N.Impl.UResource.Value)">
+            <summary>
+             CurrencyPlurals{
+                 BYB{
+                     one{"Belarusian new rouble (1994–1999)"}
+                     other{"Belarusian new roubles (1994–1999)"}
+                 }
+                 ...
+             }
+            </summary>
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink.ConsumeCurrencySpacingTable(ICU4N.Impl.UResource.Key,ICU4N.Impl.UResource.Value)">
+            <summary>
+             currencySpacing{
+                 afterCurrency{
+                     currencyMatch{"[:^S:]"}
+                     insertBetween{" "}
+                     surroundingMatch{"[:digit:]"}
+                 }
+                 beforeCurrency{
+                     currencyMatch{"[:^S:]"}
+                     insertBetween{" "}
+                     surroundingMatch{"[:digit:]"}
+                 }
+             }
+            </summary>
+        </member>
+        <member name="M:ICU4N.Impl.ICUCurrencyDisplayInfoProvider.ICUCurrencyDisplayInfo.CurrencySink.ConsumeCurrencyUnitPatternsTable(ICU4N.Impl.UResource.Key,ICU4N.Impl.UResource.Value)">
+            <summary>
+             CurrencyUnitPatterns{
+                 other{"{0} {1}"}
+                 ...
+             }
+            </summary>
+        </member>
+    </members>
+</doc>

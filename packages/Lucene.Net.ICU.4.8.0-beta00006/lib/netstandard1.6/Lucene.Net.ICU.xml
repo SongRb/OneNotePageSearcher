@@ -1,0 +1,1653 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lucene.Net.ICU</name>
+    </assembly>
+    <members>
+        <member name="T:Lucene.Net.Documents.DocumentExtensions">
+            <summary>
+            LUCENENET specific extensions to the <see cref="T:Lucene.Net.Documents.Document"/> class.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Documents.DocumentExtensions.AddICUCollationDocValuesField(Lucene.Net.Documents.Document,System.String,ICU4N.Text.Collator)">
+            <summary>
+            Adds a new <see cref="T:Lucene.Net.Collation.ICUCollationDocValuesField"/>.
+            <para/>
+            NOTE: you should not create a new one for each document, instead
+            just make one and reuse it during your indexing process, setting
+            the value via <see cref="M:Lucene.Net.Collation.ICUCollationDocValuesField.SetStringValue(System.String)"/>.
+            </summary>
+            <param name="document">This <see cref="T:Lucene.Net.Documents.Document"/>.</param>
+            <param name="name">Field name.</param>
+            <param name="collator">Collator for generating collation keys.</param>
+            <returns>The field that was added to this <see cref="T:Lucene.Net.Documents.Document"/>.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiAnalyzer">
+            <summary>
+            <see cref="T:Lucene.Net.Analysis.Analyzer"/> for Thai language. It uses <see cref="T:ICU4N.Text.BreakIterator"/> to break words.
+            <para>You must specify the required <see cref="T:Lucene.Net.Util.LuceneVersion"/>
+            compatibility when creating <see cref="T:Lucene.Net.Analysis.Th.ThaiAnalyzer"/>:
+            <list type="bullet">
+                <item><description> As of 3.6, a set of Thai stopwords is used by default</description></item>
+            </list>
+            </para>
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Th.ThaiAnalyzer.DEFAULT_STOPWORD_FILE">
+            <summary>
+            File containing default Thai stopwords. </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Th.ThaiAnalyzer.STOPWORDS_COMMENT">
+            <summary>
+            The comment character in the stopwords file.  
+            All lines prefixed with this will be ignored.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Th.ThaiAnalyzer.DefaultStopSet">
+            <summary>
+            Returns an unmodifiable instance of the default stop words set. </summary>
+            <returns> default stop words set. </returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiAnalyzer.DefaultSetHolder">
+            <summary>
+            Atomically loads the <see cref="F:Lucene.Net.Analysis.Th.ThaiAnalyzer.DefaultSetHolder.DEFAULT_STOP_SET"/> in a lazy fashion once the outer class 
+            accesses the static final set the first time.;
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion)">
+            <summary>
+            Builds an analyzer with the default stop words.
+            </summary>
+            <param name="matchVersion"> lucene compatibility version </param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion,Lucene.Net.Analysis.Util.CharArraySet)">
+            <summary>
+            Builds an analyzer with the given stop words.
+            </summary>
+            <param name="matchVersion"> lucene compatibility version </param>
+            <param name="stopwords"> a stopword set </param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiAnalyzer.CreateComponents(System.String,System.IO.TextReader)">
+            <summary>
+            Creates
+            <see cref="T:Lucene.Net.Analysis.TokenStreamComponents"/>
+            used to tokenize all the text in the provided <see cref="T:System.IO.TextReader"/>.
+            </summary>
+            <returns> <see cref="T:Lucene.Net.Analysis.TokenStreamComponents"/>
+                    built from a <see cref="T:Lucene.Net.Analysis.Standard.StandardTokenizer"/> filtered with
+                    <see cref="T:Lucene.Net.Analysis.Standard.StandardFilter"/>, <see cref="T:Lucene.Net.Analysis.Core.LowerCaseFilter"/>, <see cref="T:Lucene.Net.Analysis.Th.ThaiWordFilter"/>, and
+                    <see cref="T:Lucene.Net.Analysis.Core.StopFilter"/> </returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiTokenizer">
+            <summary>
+            Tokenizer that use <see cref="T:ICU4N.Text.BreakIterator"/> to tokenize Thai text.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Th.ThaiTokenizer.sentenceProto">
+            <summary>
+            used for breaking the text into sentences
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiTokenizer.#ctor(System.IO.TextReader)">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Th.ThaiTokenizer"/> </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiTokenizer.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,System.IO.TextReader)">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Th.ThaiTokenizer"/>, supplying the <see cref="T:Lucene.Net.Util.AttributeSource.AttributeFactory"/> </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiWordBreaker">
+            <summary>
+            LUCENENET specific class to patch the behavior of the ICU BreakIterator.
+            Corrects the breaking of words by finding transitions between Thai and non-Thai
+            characters.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiTokenizerFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Th.ThaiTokenizer"/>.
+            <code>
+            &lt;fieldType name="text_thai" class="solr.TextField" positionIncrementGap="100"&gt;
+              &lt;analyzer&gt;
+                &lt;tokenizer class="solr.ThaiTokenizerFactory"/&gt;
+              &lt;/analyzer&gt;
+            &lt;/fieldType&gt;</code>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiTokenizerFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Th.ThaiTokenizerFactory"/> </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiWordFilter">
+            <summary>
+            <see cref="T:Lucene.Net.Analysis.TokenFilter"/> that use <see cref="T:ICU4N.Text.BreakIterator"/> to break each 
+            Token that is Thai into separate Token(s) for each Thai word.
+            <para>Please note: Since matchVersion 3.1 on, this filter no longer lowercases non-thai text.
+            <see cref="T:Lucene.Net.Analysis.Th.ThaiAnalyzer"/> will insert a <see cref="T:Lucene.Net.Analysis.Core.LowerCaseFilter"/> before this filter
+            so the behaviour of the Analyzer does not change. With version 3.1, the filter handles
+            position increments correctly.
+            </para>
+            </summary>
+            @deprecated Use <see cref="T:Lucene.Net.Analysis.Th.ThaiTokenizer"/> instead. 
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiWordFilter.#ctor(Lucene.Net.Util.LuceneVersion,Lucene.Net.Analysis.TokenStream)">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Th.ThaiWordFilter"/> with the specified match version. </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Th.ThaiWordFilterFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Th.ThaiWordFilter"/>.
+            <code>
+            &lt;fieldType name="text_thai" class="solr.TextField" positionIncrementGap="100"&gt;
+              &lt;analyzer&gt;
+                &lt;tokenizer class="solr.StandardTokenizerFactory"/&gt;
+                &lt;filter class="solr.ThaiWordFilterFactory"/&gt;
+              &lt;/analyzer&gt;
+            &lt;/fieldType&gt;</code> 
+            </summary>
+            @deprecated Use <see cref="T:Lucene.Net.Analysis.Th.ThaiTokenizerFactory"/> instead 
+        </member>
+        <member name="M:Lucene.Net.Analysis.Th.ThaiWordFilterFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Analysis.Th.ThaiWordFilterFactory"/> </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Util.CharArrayIterator">
+            <summary>
+            A CharacterIterator used internally for use with <see cref="T:ICU4N.Text.BreakIterator"/>
+            <para/>
+            @lucene.internal
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.CharArrayIterator.SetText(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Set a new region of text to be examined by this iterator
+            </summary>
+            <param name="array"> text buffer to examine </param>
+            <param name="start"> offset into buffer </param>
+            <param name="length"> maximum length to examine </param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.CharArrayIterator.NewSentenceInstance">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Util.CharArrayIterator"/> that works around JRE bugs
+            in a manner suitable for <see cref="M:ICU4N.Text.BreakIterator.GetSentenceInstance"/>.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.CharArrayIterator.NewWordInstance">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Util.CharArrayIterator"/> that works around JRE bugs
+            in a manner suitable for <see cref="M:ICU4N.Text.BreakIterator.GetWordInstance"/>.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Util.SegmentingTokenizerBase">
+            <summary>
+            Breaks text into sentences with a <see cref="T:ICU4N.Text.BreakIterator"/> and
+            allows subclasses to decompose these sentences into words.
+            <para>
+            This can be used by subclasses that need sentence context 
+            for tokenization purposes, such as CJK segmenters.
+            </para>
+            <para>
+            Additionally it can be used by subclasses that want to mark
+            sentence boundaries (with a custom attribute, extra token, position
+            increment, etc) for downstream processing.
+            
+            @lucene.experimental
+            </para>
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.length">
+            <summary>
+            true length of text in the buffer </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.usableLength">
+            <summary>
+            length in buffer that can be evaluated safely, up to a safe end point </summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.m_offset">
+            <summary>
+            accumulated offset of previous buffers for this reader, for offsetAtt </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.#ctor(System.IO.TextReader,ICU4N.Text.BreakIterator)">
+            <summary>
+            Construct a new SegmenterBase, using
+            the provided <see cref="T:ICU4N.Text.BreakIterator"/> for sentence segmentation.
+            <para>
+            Note that you should never share <see cref="T:ICU4N.Text.BreakIterator"/>s across different
+            <see cref="T:Lucene.Net.Analysis.TokenStream"/>s, instead a newly created or cloned one should always
+            be provided to this constructor.
+            </para>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,System.IO.TextReader,ICU4N.Text.BreakIterator)">
+            <summary>
+            Construct a new SegmenterBase, also supplying the <see cref="T:Lucene.Net.Util.AttributeSource.AttributeFactory"/>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.FindSafeEnd">
+            <summary>
+            Returns the last unambiguous break position in the text. </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.IsSafeEnd(System.Char)">
+            <summary>
+            For sentence tokenization, these are the unambiguous break positions. </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.Refill">
+            <summary>
+            Refill the buffer, accumulating the offset and setting usableLength to the
+            last unambiguous break position
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.Read(System.IO.TextReader,System.Char[],System.Int32,System.Int32)">
+            <summary>
+            commons-io's readFully, but without bugs if offset != 0 </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.IncrementSentence">
+            <summary>
+            return true if there is a token from the buffer, or null if it is
+            exhausted.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.SetNextSentence(System.Int32,System.Int32)">
+            <summary>
+            Provides the next input sentence for analysis </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Util.SegmentingTokenizerBase.IncrementWord">
+            <summary>
+            Returns true if another word is available </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUFoldingFilter">
+            <summary>
+            A <see cref="T:Lucene.Net.Analysis.TokenFilter"/> that applies search term folding to Unicode text,
+            applying foldings from UTR#30 Character Foldings.
+            </summary>
+            <remarks>
+            This filter applies the following foldings from the report to unicode text:
+            <list type="bullet">
+                <item><description>Accent removal</description></item>
+                <item><description>Case folding</description></item>
+                <item><description>Canonical duplicates folding</description></item>
+                <item><description>Dashes folding</description></item>
+                <item><description>Diacritic removal (including stroke, hook, descender)</description></item>
+                <item><description>Greek letterforms folding</description></item>
+                <item><description>Han Radical folding</description></item>
+                <item><description>Hebrew Alternates folding</description></item>
+                <item><description>Jamo folding</description></item>
+                <item><description>Letterforms folding</description></item>
+                <item><description>Math symbol folding</description></item>
+                <item><description>Multigraph Expansions: All</description></item>
+                <item><description>Native digit folding</description></item>
+                <item><description>No-break folding</description></item>
+                <item><description>Overline folding</description></item>
+                <item><description>Positional forms folding</description></item>
+                <item><description>Small forms folding</description></item>
+                <item><description>Space folding</description></item>
+                <item><description>Spacing Accents folding</description></item>
+                <item><description>Subscript folding</description></item>
+                <item><description>Superscript folding</description></item>
+                <item><description>Suzhou Numeral folding</description></item>
+                <item><description>Symbol folding</description></item>
+                <item><description>Underline folding</description></item>
+                <item><description>Vertical forms folding</description></item>
+                <item><description>Width folding</description></item>
+            </list>
+            <para/>
+            Additionally, Default Ignorables are removed, and text is normalized to NFKC.
+            All foldings, case folding, and normalization mappings are applied recursively
+            to ensure a fully folded and normalized result.
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUFoldingFilter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Icu.ICUFoldingFilter"/> on the specified input
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUFoldingFilterFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Icu.ICUFoldingFilter"/>.
+            </summary>
+            <remarks>
+            <code>
+            &lt;fieldType name="text_folded" class="solr.TextField" positionIncrementGap="100"&gt;
+              &lt;analyzer&gt;
+                &lt;tokenizer class="solr.WhitespaceTokenizerFactory"/&gt;
+                &lt;filter class="solr.ICUFoldingFilterFactory"/&gt;
+              &lt;/analyzer&gt;
+            &lt;/fieldType&gt;
+            </code>
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUFoldingFilterFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>Creates a new <see cref="T:Lucene.Net.Analysis.Icu.ICUFoldingFilterFactory"/>.</summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilter">
+            <summary>
+            Normalize token text with ICU's <see cref="T:ICU4N.Text.Normalizer2"/>.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilter.#ctor(System.IO.TextReader)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilter"/> that combines NFKC normalization, Case
+            Folding, and removes Default Ignorables (NFKC_Casefold).
+            </summary>
+            <param name="input"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilter.#ctor(System.IO.TextReader,ICU4N.Text.Normalizer2)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilter"/> with the specified <see cref="T:ICU4N.Text.Normalizer2"/>.
+            </summary>
+            <param name="input">Input text.</param>
+            <param name="normalizer">Normalizer to use.</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilterFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilter"/>.
+            </summary>
+            <remarks>
+            Supports the following attributes:
+            <list type="table">
+                <item>
+                    <term>name</term>
+                    <description>
+                        A <a href="http://unicode.org/reports/tr15/">Unicode Normalization Form</a>, 
+                        one of 'nfc','nfkc', 'nfkc_cf'. Default is nfkc_cf.
+                    </description></item>
+                <item>
+                    <term>mode</term>
+                    <description>
+                        Either 'compose' or 'decompose'. Default is compose. Use "decompose" with nfc
+                        or nfkc, to get nfd or nfkd, respectively.
+                    </description></item>
+                <item>
+                    <term>filter</term>
+                    <description>
+                        A <see cref="T:ICU4N.Text.UnicodeSet"/> pattern. Codepoints outside the set are
+                        always left unchanged. Default is [] (the null set, no filtering).
+                    </description>
+                </item>
+            </list>
+            </remarks>
+            <seealso cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilter"/>
+            <seealso cref="T:ICU4N.Text.Normalizer2"/>
+            <seealso cref="T:ICU4N.Text.FilteredNormalizer2"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilterFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>Creates a new <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2CharFilterFactory"/>.</summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUNormalizer2Filter">
+            <summary>
+            Normalize token text with ICU's <see cref="T:ICU4N.Text.Normalizer2"/>.
+            </summary>
+            <remarks>
+            With this filter, you can normalize text in the following ways:
+            <list type="bullet">
+                <item><description>NFKC Normalization, Case Folding, and removing Ignorables (the default)</description></item>
+                <item><description>Using a standard Normalization mode (NFC, NFD, NFKC, NFKD)</description></item>
+                <item><description>Based on rules from a custom normalization mapping.</description></item>
+            </list>
+            <para/>
+            If you use the defaults, this filter is a simple way to standardize Unicode text
+            in a language-independent way for search:
+            <list type="bullet">
+                <item><description>
+                    The case folding that it does can be seen as a replacement for
+                    LowerCaseFilter: For example, it handles cases such as the Greek sigma, so that
+                    "Μάϊος" and "ΜΆΪΟΣ" will match correctly.
+                </description></item>
+                <item><description>
+                    The normalization will standardizes different forms of the same 
+                    character in Unicode. For example, CJK full-width numbers will be standardized
+                    to their ASCII forms.
+                </description></item>
+                <item><description>
+                    Ignorables such as Zero-Width Joiner and Variation Selectors are removed.
+                    These are typically modifier characters that affect display.
+                </description></item>
+            </list>
+            </remarks>
+            <seealso cref="T:ICU4N.Text.Normalizer2"/>
+            <seealso cref="T:ICU4N.Text.FilteredNormalizer2"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUNormalizer2Filter.#ctor(Lucene.Net.Analysis.TokenStream)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2Filter"/> that combines NFKC normalization, Case
+            Folding, and removes Default Ignorables (NFKC_Casefold)
+            </summary>
+            <param name="input"></param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUNormalizer2Filter.#ctor(Lucene.Net.Analysis.TokenStream,ICU4N.Text.Normalizer2)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2Filter"/> with the specified <see cref="T:ICU4N.Text.Normalizer2"/>
+            </summary>
+            <param name="input">stream</param>
+            <param name="normalizer">normalizer to use</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUNormalizer2FilterFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2Filter"/>.
+            </summary>
+            <remarks>
+            Supports the following attributes:
+            <list type="table">
+                <item>
+                    <term>name</term>
+                    <description>
+                        A <a href="http://unicode.org/reports/tr15/">Unicode Normalization Form</a>, 
+                        one of 'nfc','nfkc', 'nfkc_cf'. Default is nfkc_cf.
+                    </description>
+                </item>
+                <item>
+                    <term>mode</term>
+                    <description>
+                        Either 'compose' or 'decompose'. Default is compose. Use "decompose" with nfc
+                        or nfkc, to get nfd or nfkd, respectively.
+                    </description>
+                </item>
+                <item>
+                    <term>filter</term>
+                    <description>
+                        A <see cref="T:ICU4N.Text.UnicodeSet"/> pattern. Codepoints outside the set are
+                        always left unchanged. Default is [] (the null set, no filtering).
+                    </description>
+                </item>
+            </list>
+            </remarks>
+            <seealso cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2Filter"/>
+            <seealso cref="T:ICU4N.Text.Normalizer2"/>
+            <seealso cref="T:ICU4N.Text.FilteredNormalizer2"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUNormalizer2FilterFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>Creates a new <see cref="T:Lucene.Net.Analysis.Icu.ICUNormalizer2FilterFactory"/>.</summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUTransformFilter">
+            <summary>
+            A <see cref="T:Lucene.Net.Analysis.TokenFilter"/> that transforms text with ICU.
+            </summary>
+            <remarks>
+            ICU provides text-transformation functionality via its Transliteration API.
+            Although script conversion is its most common use, a Transliterator can
+            actually perform a more general class of tasks. In fact, Transliterator
+            defines a very general API which specifies only that a segment of the input
+            text is replaced by new text. The particulars of this conversion are
+            determined entirely by subclasses of Transliterator.
+            <para/>
+            Some useful transformations for search are built-in:
+            <list type="bullet">
+                <item><description>Conversion from Traditional to Simplified Chinese characters</description></item>
+                <item><description>Conversion from Hiragana to Katakana</description></item>
+                <item><description>Conversion from Fullwidth to Halfwidth forms.</description></item>
+                <item><description>Script conversions, for example Serbian Cyrillic to Latin</description></item>
+            </list>
+            <para/>
+            Example usage: 
+            <code>
+                stream = new ICUTransformFilter(stream, Transliterator.GetInstance("Traditional-Simplified"));
+            </code>
+            <para/>
+            For more details, see the <a href="http://userguide.icu-project.org/transforms/general">ICU User Guide</a>.
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUTransformFilter.#ctor(Lucene.Net.Analysis.TokenStream,ICU4N.Text.Transliterator)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Analysis.Icu.ICUTransformFilter"/> that transforms text on the given stream.
+            </summary>
+            <param name="input"><see cref="T:Lucene.Net.Analysis.TokenStream"/> to filter.</param>
+            <param name="transform">Transliterator to transform the text.</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUTransformFilter.ReplaceableTermAttribute">
+            <summary>
+            Wrap a <see cref="T:Lucene.Net.Analysis.TokenAttributes.ICharTermAttribute"/> with the <see cref="T:ICU4N.Text.IReplaceable"/> API.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUTransformFilter.ReplaceableTermAttribute.ShiftForReplace(System.Int32,System.Int32,System.Int32)">
+            <summary>shift text (if necessary) for a replacement operation</summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.ICUTransformFilterFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Icu.ICUTransformFilter"/>.
+            </summary>
+            <remarks>
+            Supports the following attributes:
+            <list type="table">
+                <item><item>id (mandatory)</item><description>A Transliterator ID, one from <see cref="M:ICU4N.Text.Transliterator.GetAvailableIDs"/></description>.</item>
+                <item><item>direction (optional)</item><description>Either 'forward' or 'reverse'. Default is forward.</description></item>
+            </list>
+            </remarks>
+            <seealso cref="T:ICU4N.Text.Transliterator"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.ICUTransformFilterFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>Creates a new <see cref="T:Lucene.Net.Analysis.Icu.ICUTransformFilterFactory"/>.</summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.BreakIteratorWrapper">
+            <summary>
+            Contain all the issues surrounding BreakIterators in ICU in one place.
+            Basically this boils down to the fact that they aren't very friendly to any
+            sort of OO design.
+            <para/>
+            http://bugs.icu-project.org/trac/ticket/5901: RBBI.getRuleStatus(), hoist to
+            BreakIterator from <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>
+            <para/>
+            DictionaryBasedBreakIterator is a subclass of <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>, but
+            doesn't actually behave as a subclass: it always returns 0 for
+            getRuleStatus(): 
+            http://bugs.icu-project.org/trac/ticket/4730: Thai RBBI, no boundary type
+            tags
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.BreakIteratorWrapper.Wrap(ICU4N.Text.BreakIterator)">
+            <summary>
+            If its a <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>, the rule status can be used for token type. If it's
+            any other <see cref="T:ICU4N.Text.BreakIterator"/>, the rulestatus method is not available, so treat
+            it like a generic <see cref="T:ICU4N.Text.BreakIterator"/>.
+            </summary>
+            <param name="breakIterator"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.BreakIteratorWrapper.RBBIWrapper">
+            <summary>
+            <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/> wrapper: <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/> (as long as it's not
+            a DictionaryBasedBreakIterator) behaves correctly.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.BreakIteratorWrapper.BIWrapper">
+            <summary>
+            Generic <see cref="T:ICU4N.Text.BreakIterator"/> wrapper: Either the rulestatus method is not
+            available or always returns 0. Calculate a rulestatus here so it behaves
+            like <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>.
+            </summary>
+            <remarks>
+            Note: This is slower than <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>.
+            </remarks>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.CharArrayIterator">
+            <summary>
+            Wraps a <see cref="T:char[]"/> as <see cref="T:ICU4N.Support.Text.CharacterIterator"/> for processing with a <see cref="T:ICU4N.Text.BreakIterator"/>
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.CharArrayIterator.SetText(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Set a new region of text to be examined by this iterator
+            </summary>
+            <param name="array">text buffer to examine</param>
+            <param name="start">offset into buffer</param>
+            <param name="length"> maximum length to examine</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.CompositeBreakIterator">
+            <summary>
+            An internal <see cref="T:ICU4N.Text.BreakIterator"/> for multilingual text, following recommendations
+            from: UAX #29: Unicode Text Segmentation. (http://unicode.org/reports/tr29/)
+            <para/>
+            See http://unicode.org/reports/tr29/#Tailoring for the motivation of this
+            design.
+            <para/>
+            Text is first divided into script boundaries. The processing is then
+            delegated to the appropriate break iterator for that specific script.
+            <para/>
+            This break iterator also allows you to retrieve the ISO 15924 script code
+            associated with a piece of text.
+            <para/>
+            See also UAX #29, UTR #24
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.CompositeBreakIterator.Next">
+            <summary>
+            Retrieve the next break position. If the RBBI range is exhausted within the
+            script boundary, examine the next script boundary.
+            </summary>
+            <returns>The next break position or <see cref="F:ICU4N.Text.BreakIterator.Done"/>.</returns>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.Segmentation.CompositeBreakIterator.Current">
+            <summary>
+            Gets the current break position. Returns the current break position or <see cref="F:ICU4N.Text.BreakIterator.Done"/>.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.Segmentation.CompositeBreakIterator.RuleStatus">
+            <summary>
+            Gets the rule status code (token type) from the underlying break
+            iterator. See <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/> constants.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.Segmentation.CompositeBreakIterator.ScriptCode">
+            <summary>
+            Gets the <see cref="T:ICU4N.Globalization.UScript"/> script code for the current token. This code can be
+            decoded with <see cref="T:ICU4N.Globalization.UScript"/> into a name or ISO 15924 code.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.CompositeBreakIterator.SetText(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Set a new region of text to be examined by this iterator.
+            </summary>
+            <param name="text">Buffer of text.</param>
+            <param name="start">Offset into buffer.</param>
+            <param name="length">Maximum length to examine.</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig">
+            <summary>
+            Default <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig"/> that is generally applicable
+            to many languages.
+            </summary>
+            <remarks>
+            Generally tokenizes Unicode text according to UAX#29 
+            (<see cref="T:BreakIterator.GetWordInstance(ULocale.ROOT)"/>), 
+            but with the following tailorings:
+            <list type="bullet">
+                <item><description>Thai, Lao, Myanmar, Khmer, and CJK text is broken into words with a dictionary.</description></item>
+            </list>
+            <para/>
+            @lucene.experimental
+            </remarks>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.WORD_IDEO">
+            <summary>Token type for words containing ideographic characters</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.WORD_HIRAGANA">
+            <summary>Token type for words containing Japanese hiragana</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.WORD_KATAKANA">
+            <summary>Token type for words containing Japanese katakana</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.WORD_HANGUL">
+            <summary>Token type for words containing Korean hangul</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.WORD_LETTER">
+            <summary>Token type for words that contain letters</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.WORD_NUMBER">
+            <summary>Token type for words that appear to be numbers</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.cjkBreakIterator">
+            <summary>
+            the default breakiterators in use. these can be expensive to
+            instantiate, cheap to clone.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig.#ctor(System.Boolean,System.Boolean)">
+            <summary>
+            Creates a new config. This object is lightweight, but the first
+            time the class is referenced, breakiterators will be initialized.
+            </summary>
+            <param name="cjkAsWords">true if cjk text should undergo dictionary-based segmentation,
+            otherwise text will be segmented according to UAX#29 defaults.</param>
+            <param name="myanmarAsWords">If this is true, all Han+Hiragana+Katakana words will be tagged as IDEOGRAPHIC.</param>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer">
+            <summary>
+            Breaks text into words according to UAX #29: Unicode Text Segmentation
+            (http://www.unicode.org/reports/tr29/)
+            <para/>
+            Words are broken across script boundaries, then segmented according to
+            the BreakIterator and typing provided by the <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig"/>
+            <para/>
+            @lucene.experimental
+            </summary>
+            <seealso cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig"/>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.length">
+            <summary>true length of text in the buffer</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.usableLength">
+            <summary>length in buffer that can be evaluated safely, up to a safe end point</summary>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.offset">
+            <summary>accumulated offset of previous buffers for this reader, for offsetAtt</summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.#ctor(System.IO.TextReader)">
+            <summary>
+            Construct a new <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer"/> that breaks text into words from the given
+            <see cref="T:System.IO.TextReader"/>.
+            </summary>
+            <remarks>
+            The default script-specific handling is used.
+            <para/>
+            The default attribute factory is used.
+            </remarks>
+            <param name="input"><see cref="T:System.IO.TextReader"/> containing text to tokenize.</param>
+            <seealso cref="T:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig"/>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.#ctor(System.IO.TextReader,Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig)">
+            <summary>
+            Construct a new <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer"/> that breaks text into words from the given
+            <see cref="T:System.IO.TextReader"/>, using a tailored <see cref="T:ICU4N.Text.BreakIterator"/> configuration.
+            </summary>
+            <remarks>
+            The default attribute factory is used.
+            </remarks>
+            <param name="input"><see cref="T:System.IO.TextReader"/> containing text to tokenize.</param>
+            <param name="config">Tailored <see cref="T:ICU4N.Text.BreakIterator"/> configuration.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,System.IO.TextReader,Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig)">
+            <summary>
+            Construct a new <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer"/> that breaks text into words from the given
+            <see cref="T:System.IO.TextReader"/>, using a tailored <see cref="T:ICU4N.Text.BreakIterator"/> configuration.
+            </summary>
+            <param name="factory"><see cref="T:Lucene.Net.Util.AttributeSource.AttributeFactory"/> to use.</param>
+            <param name="input"><see cref="T:System.IO.TextReader"/> containing text to tokenize.</param>
+            <param name="config">Tailored <see cref="T:ICU4N.Text.BreakIterator"/> configuration.</param>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.FindSafeEnd">
+            <summary>
+            Returns the last unambiguous break position in the text.
+            </summary>
+            <returns>Position of character, or -1 if one does not exist.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.Refill">
+            <summary>
+            Refill the buffer, accumulating the offset and setting usableLength to the
+            last unambiguous break position.
+            </summary>
+            <exception cref="T:System.IO.IOException">If there is a low-level I/O error.</exception>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.Read(System.IO.TextReader,System.Char[],System.Int32,System.Int32)">
+            <summary>commons-io's readFully, but without bugs if offset != 0</summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer.IncrementTokenBuffer">
+            <summary>
+            Returns true if there is a token from the buffer, or null if it is exhausted.
+            </summary>
+            <returns>true if there is a token from the buffer, or null if it is exhausted.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig">
+            <summary>
+            Class that allows for tailored Unicode Text Segmentation on
+            a per-writing system basis.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig.#ctor">
+            <summary>
+            Sole constructor. (For invocation by subclass 
+            constructors, typically implicit.)
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig.GetBreakIterator(System.Int32)">
+            <summary>
+            Return a breakiterator capable of processing a given script.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig.GetType(System.Int32,ICU4N.Text.RuleStatus)">
+            <summary>
+            Return a token type value for a given script and BreakIterator rule status.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerConfig.CombineCJ">
+            <summary>
+            true if Han, Hiragana, and Katakana scripts should all be returned as Japanese
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizer"/>.
+            Words are broken across script boundaries, then segmented according to
+            the <see cref="T:ICU4N.Text.BreakIterator"/> and typing provided by the <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.DefaultICUTokenizerConfig"/>.
+            </summary>
+            <remarks>
+            To use the default set of per-script rules:
+            <code>
+            &lt;fieldType name="text_icu" class="solr.TextField" positionIncrementGap="100"&gt;
+              &lt;analyzer&gt;
+                &lt;tokenizer class="solr.ICUTokenizerFactory"/&gt;
+              &lt;/analyzer&gt;
+            &lt;/fieldType&gt;
+            </code>
+            <para/>
+            You can customize this tokenizer's behavior by specifying per-script rule files,
+            which are compiled by the ICU <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>.  See the
+            <a href="http://userguide.icu-project.org/boundaryanalysis#TOC-RBBI-Rules"
+            >ICU RuleBasedBreakIterator syntax reference</a>.
+            <para/>
+            To add per-script rules, add a "rulefiles" argument, which should contain a
+            comma-separated list of <c>code:rulefile</c> pairs in the following format:
+            <a href="http://unicode.org/iso15924/iso15924-codes.html"
+            >four-letter ISO 15924 script code</a>, followed by a colon, then a resource
+            path.  E.g. to specify rules for Latin (script code "Latn") and Cyrillic
+            (script code "Cyrl"):
+            <code>
+            &lt;fieldType name="text_icu_custom" class="solr.TextField" positionIncrementGap="100"&gt;
+              &lt;analyzer&gt;
+                &lt;tokenizer class="solr.ICUTokenizerFactory" cjkAsWords="true"
+                           rulefiles="Latn:my.Latin.rules.rbbi,Cyrl:my.Cyrillic.rules.rbbi"/&gt;
+              &lt;/analyzer&gt;
+            &lt;/fieldType&gt;
+            </code>
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerFactory.#ctor(System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>Creates a new <see cref="T:Lucene.Net.Analysis.Icu.Segmentation.ICUTokenizerFactory"/>.</summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator">
+            <summary>
+            An iterator that locates ISO 15924 script boundaries in text. 
+            </summary>
+            <remarks>
+            This is not the same as simply looking at the Unicode block, or even the 
+            Script property. Some characters are 'common' across multiple scripts, and
+            some 'inherit' the script value of text surrounding them.
+            <para/>
+            This is similar to ICU (internal-only) UScriptRun, with the following
+            differences:
+            <list type="bullet">
+                <item><description>
+                    Doesn't attempt to match paired punctuation. For tokenization purposes, this
+                    is not necessary. Its also quite expensive. 
+                </description></item>
+                <item><description>
+                    Non-spacing marks inherit the script of their base character, following 
+                    recommendations from UTR #24.
+                </description></item>
+            </list>
+            <para/>
+            @lucene.experimental
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.#ctor(System.Boolean)">
+            <param name="combineCJ">if true: Han,Hiragana,Katakana will all return as <see cref="F:ICU4N.Globalization.UScript.Japanese"/>.</param>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.ScriptStart">
+            <summary>
+            Gets the start of this script run.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.ScriptLimit">
+            <summary>
+            Get the index of the first character after the end of this script run.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.ScriptCode">
+            <summary>
+            Get the UScript script code for this script run.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.Next">
+            <summary>
+            Iterates to the next script run, returning true if one exists.
+            </summary>
+            <returns>true if there is another script run, false otherwise.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.IsSameScript(System.Int32,System.Int32)">
+            <summary>Determine if two scripts are compatible.</summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.SetText(System.Char[],System.Int32,System.Int32)">
+            <summary>
+            Set a new region of text to be examined by this iterator.
+            </summary>
+            <param name="text">Text buffer to examine.</param>
+            <param name="start">Offset into buffer.</param>
+            <param name="length">Maximum length to examine.</param>
+        </member>
+        <member name="F:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.basicLatin">
+            <summary>Linear fast-path for basic latin case.</summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.Segmentation.ScriptIterator.GetScript(System.Int32)">
+            <summary>Fast version of <see cref="M:ICU4N.Globalization.UScript.GetScript(System.Int32)"/>. Basic Latin is an array lookup.</summary>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.TokenAttributes.IScriptAttribute">
+            <summary>
+            This attribute stores the UTR #24 script value for a token of text.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Analysis.Icu.TokenAttributes.IScriptAttribute.Code">
+            <summary>
+            Gets or Sets the numeric code for this script value.
+            <para/>
+            This is the constant value from <see cref="T:ICU4N.Globalization.UScript"/>.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.TokenAttributes.IScriptAttribute.GetName">
+            <summary>
+            Get the full name.
+            </summary>
+            <returns>UTR #24 full name.</returns>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.TokenAttributes.IScriptAttribute.GetShortName">
+            <summary>
+            Get the abbreviated name.
+            </summary>
+            <returns>UTR #24 abbreviated name.</returns>
+        </member>
+        <member name="T:Lucene.Net.Analysis.Icu.TokenAttributes.ScriptAttribute">
+            <summary>
+            Implementation of <see cref="T:Lucene.Net.Analysis.Icu.TokenAttributes.IScriptAttribute"/> that stores the script
+            as an integer.
+            <para/>
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Analysis.Icu.TokenAttributes.ScriptAttribute.#ctor">
+            <summary>Initializes this attribute with <see cref="F:ICU4N.Globalization.UScript.Common"/>.</summary>
+        </member>
+        <member name="T:Lucene.Net.Collation.ICUCollationAttributeFactory">
+            <summary>
+            Converts each token into its <see cref="T:ICU4N.Text.CollationKey"/>, and
+            then encodes bytes as an index term.
+            </summary>
+            <remarks>
+            <strong>WARNING:</strong> Make sure you use exactly the same <see cref="T:ICU4N.Text.Collator"/> at
+            index and query time -- <see cref="T:ICU4N.Text.CollationKey"/>s are only comparable when produced by
+            the same <see cref="T:ICU4N.Text.Collator"/>.  <see cref="T:ICU4N.Text.RuleBasedCollator"/>s are 
+            independently versioned, so it is safe to search against stored
+            <see cref="T:ICU4N.Text.CollationKey"/>s if the following are exactly the same (best practice is
+            to store this information with the index and check that they remain the
+            same at query time):
+            <para/>
+            <list type="number">
+                <item><description>Collator version - see <see cref="T:ICU4N.Text.Collator"/> Version</description></item>
+                <item><description>The collation strength used - see <see cref="P:ICU4N.Text.Collator.Strength"/></description></item>
+            </list>
+            <para/>
+            <see cref="T:ICU4N.Text.CollationKey"/>s generated by ICU Collators are not compatible with those
+            generated by java.text.Collators.  Specifically, if you use 
+            <see cref="T:Lucene.Net.Collation.ICUCollationAttributeFactory"/> to generate index terms, do not use 
+            CollationAttributeFactory on the query side, or vice versa.
+            <para/>
+            <see cref="T:Lucene.Net.Collation.ICUCollationAttributeFactory"/> is significantly faster and generates significantly
+            shorter keys than CollationAttributeFactory.  See
+            <a href="http://site.icu-project.org/charts/collation-icu4j-sun"
+            >http://site.icu-project.org/charts/collation-icu4j-sun</a> for key
+            generation timing and key length comparisons between ICU4J and
+            java.text.Collator over several languages.
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Collation.ICUCollationAttributeFactory.#ctor(ICU4N.Text.Collator)">
+            <summary>
+            Create an <see cref="T:Lucene.Net.Collation.ICUCollationAttributeFactory"/>, using 
+            <see cref="F:Lucene.Net.Util.AttributeSource.AttributeFactory.DEFAULT_ATTRIBUTE_FACTORY"/> as the
+            factory for all other attributes.
+            </summary>
+            <param name="collator"><see cref="T:ICU4N.Text.CollationKey"/> generator</param>
+        </member>
+        <member name="M:Lucene.Net.Collation.ICUCollationAttributeFactory.#ctor(Lucene.Net.Util.AttributeSource.AttributeFactory,ICU4N.Text.Collator)">
+            <summary>
+            Create an <see cref="T:Lucene.Net.Collation.ICUCollationAttributeFactory"/>, using the supplied Attribute 
+            Factory as the factory for all other attributes.
+            </summary>
+            <param name="delegate">Attribute Factory</param>
+            <param name="collator"><see cref="T:ICU4N.Text.CollationKey"/> generator</param>
+        </member>
+        <member name="T:Lucene.Net.Collation.ICUCollationDocValuesField">
+            <summary>
+            Indexes sort keys as a single-valued <see cref="T:Lucene.Net.Documents.SortedDocValuesField"/>.
+            </summary>
+            <remarks>
+            This is more efficient that <see cref="T:Lucene.Net.Collation.ICUCollationKeyAnalyzer"/> if the field 
+            only has one value: no uninversion is necessary to sort on the field, 
+            locale-sensitive range queries can still work via <see cref="T:Lucene.Net.Search.FieldCacheRangeFilter"/>, 
+            and the underlying data structures built at index-time are likely more efficient 
+            and use less memory than FieldCache.
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Collation.ICUCollationDocValuesField.#ctor(System.String,ICU4N.Text.Collator)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Collation.ICUCollationDocValuesField"/>.
+            <para/>
+            NOTE: you should not create a new one for each document, instead
+            just make one and reuse it during your indexing process, setting
+            the value via <see cref="M:Lucene.Net.Collation.ICUCollationDocValuesField.SetStringValue(System.String)"/>.
+            </summary>
+            <param name="name">Field name.</param>
+            <param name="collator">Collator for generating collation keys.</param>
+        </member>
+        <member name="T:Lucene.Net.Collation.ICUCollationKeyAnalyzer">
+            <summary>
+            Configures <see cref="T:Lucene.Net.Analysis.Core.KeywordTokenizer"/> with <see cref="T:Lucene.Net.Collation.ICUCollationAttributeFactory"/>.
+            </summary>
+            <remarks>
+            Converts the token into its <see cref="T:ICU4N.Text.CollationKey"/>, and
+            then encodes the <see cref="T:ICU4N.Text.CollationKey"/> either directly or with 
+            <see cref="T:Lucene.Net.Util.IndexableBinaryStringTools"/> (see <a href="#version">below</a>), to allow it to
+            be stored as an index term.
+            <para/>
+            <strong>WARNING:</strong> Make sure you use exactly the same <see cref="T:ICU4N.Text.Collator"/> at
+            index and query time -- CollationKeys are only comparable when produced by
+            the same <see cref="T:ICU4N.Text.Collator"/>.  <see cref="T:ICU4N.Text.RuleBasedCollator"/>s are 
+            independently versioned, so it is safe to search against stored
+            <see cref="T:ICU4N.Text.CollationKey"/>s if the following are exactly the same (best practice is
+            to store this information with the index and check that they remain the
+            same at query time):
+            <list type="number">
+                <item><description>Collator version - see <see cref="T:ICU4N.Text.Collator"/> Version</description></item>
+                <item><description>The collation strength used - see <see cref="P:ICU4N.Text.Collator.Strength"/></description></item>
+            </list>
+            <para/>
+            <see cref="T:ICU4N.Text.CollationKey"/>s generated by ICU Collators are not compatible with those
+            generated by java.text.Collators.  Specifically, if you use 
+            <see cref="T:Lucene.Net.Collation.ICUCollationKeyAnalyzer"/> to generate index terms, do not use 
+            CollationKeyAnalyzer on the query side, or vice versa.
+            <para/>
+            ICUCollationKeyAnalyzer is significantly faster and generates significantly
+            shorter keys than CollationKeyAnalyzer.  See
+            <a href="http://site.icu-project.org/charts/collation-icu4j-sun"
+            >http://site.icu-project.org/charts/collation-icu4j-sun</a> for key
+            generation timing and key length comparisons between ICU4J and
+            java.text.Collator over several languages.
+            <para/>
+            <a name="version"/>
+            You must specify the required <see cref="T:Lucene.Net.Util.LuceneVersion"/>
+            compatibility when creating <see cref="T:Lucene.Net.Collation.ICUCollationKeyAnalyzer"/>:
+            <list type="bullet">
+                <item><description>As of 4.0, <see cref="T:ICU4N.Text.CollationKey"/>s are directly encoded as bytes. Previous
+                versions will encode the bytes with <see cref="T:Lucene.Net.Util.IndexableBinaryStringTools"/>.</description></item>
+            </list>
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Collation.ICUCollationKeyAnalyzer.#ctor(Lucene.Net.Util.LuceneVersion,ICU4N.Text.Collator)">
+            <summary>
+            Create a new <see cref="T:Lucene.Net.Collation.ICUCollationKeyAnalyzer"/>, using the specified <paramref name="collator"/>.
+            </summary>
+            <param name="matchVersion">See <see cref="T:Lucene.Net.Collation.ICUCollationKeyAnalyzer"/>.</param>
+            <param name="collator"><see cref="T:ICU4N.Text.CollationKey"/> generator.</param>
+        </member>
+        <member name="T:Lucene.Net.Collation.ICUCollationKeyFilter">
+            <summary>
+            Converts each token into its <see cref="T:ICU4N.Text.CollationKey"/>, and
+            then encodes the <see cref="T:ICU4N.Text.CollationKey"/> with <see cref="T:Lucene.Net.Util.IndexableBinaryStringTools"/>, to
+            allow it to be stored as an index term.
+            </summary>
+            <remarks>
+            <strong>WARNING:</strong> Make sure you use exactly the same <see cref="T:ICU4N.Text.Collator"/> at
+            index and query time -- CollationKeys are only comparable when produced by
+            the same <see cref="T:ICU4N.Text.Collator"/>.  <see cref="T:ICU4N.Text.RuleBasedCollator"/>s are 
+            independently versioned, so it is safe to search against stored
+            <see cref="T:ICU4N.Text.CollationKey"/>s if the following are exactly the same (best practice is
+            to store this information with the index and check that they remain the
+            same at query time):
+            <list type="number">
+                <item><description>Collator version - see <see cref="T:ICU4N.Text.Collator"/> Version</description></item>
+                <item><description>The collation strength used - see <see cref="P:ICU4N.Text.Collator.Strength"/></description></item>
+            </list>
+            <para/>
+            <see cref="T:ICU4N.Text.CollationKey"/>s generated by ICU Collators are not compatible with those
+            generated by java.text.Collators.  Specifically, if you use 
+            <see cref="T:Lucene.Net.Collation.ICUCollationKeyAnalyzer"/> to generate index terms, do not use 
+            CollationKeyAnalyzer on the query side, or vice versa.
+            <para/>
+            ICUCollationKeyAnalyzer is significantly faster and generates significantly
+            shorter keys than CollationKeyAnalyzer.  See
+            <a href="http://site.icu-project.org/charts/collation-icu4j-sun"
+            >http://site.icu-project.org/charts/collation-icu4j-sun</a> for key
+            generation timing and key length comparisons between ICU4J and
+            java.text.Collator over several languages.
+            </remarks>
+        </member>
+        <member name="M:Lucene.Net.Collation.ICUCollationKeyFilter.#ctor(Lucene.Net.Analysis.TokenStream,ICU4N.Text.Collator)">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Collation.ICUCollationKeyFilter"/>.
+            </summary>
+            <param name="input">Source token stream.</param>
+            <param name="collator"><see cref="T:ICU4N.Text.CollationKey"/> generator.</param>
+        </member>
+        <member name="T:Lucene.Net.Collation.ICUCollationKeyFilterFactory">
+            <summary>
+            Factory for <see cref="T:Lucene.Net.Collation.ICUCollationKeyFilter"/>.
+            </summary>
+            <remarks>
+            This factory can be created in two ways: 
+            <list type="bullet">
+                <item><description>Based upon a system collator associated with a Locale.</description></item>
+                <item><description>Based upon a tailored ruleset.</description></item>
+            </list>
+            <para/>
+            Using a System collator:
+            <list type="bullet">
+                <item><description>locale: RFC 3066 locale ID (mandatory)</description></item>
+                <item><description>strength: 'primary','secondary','tertiary', 'quaternary', or 'identical' (optional)</description></item>
+                <item><description>decomposition: 'no', or 'canonical' (optional)</description></item>
+            </list>
+            <para/>
+            Using a Tailored ruleset:
+            <list type="bullet">
+                <item><description>custom: UTF-8 text file containing rules supported by RuleBasedCollator (mandatory)</description></item>
+                <item><description>strength: 'primary','secondary','tertiary', 'quaternary', or 'identical' (optional)</description></item>
+                <item><description>decomposition: 'no' or 'canonical' (optional)</description></item>
+            </list>
+            <para/>
+            Expert options:
+            <list type="bullet">
+                <item><description>alternate: 'shifted' or 'non-ignorable'. Can be used to ignore punctuation/whitespace.</description></item>
+                <item><description>caseLevel: 'true' or 'false'. Useful with strength=primary to ignore accents but not case.</description></item>
+                <item><description>caseFirst: 'lower' or 'upper'. Useful to control which is sorted first when case is not ignored.</description></item>
+                <item><description>numeric: 'true' or 'false'. Digits are sorted according to numeric value, e.g. foobar-9 sorts before foobar-10</description></item>
+            </list>
+            </remarks>
+            <seealso cref="T:ICU4N.Text.Collator"/>
+            <seealso cref="T:ICU4N.Text.RuleBasedCollator"/>
+        </member>
+        <member name="M:Lucene.Net.Collation.ICUCollationKeyFilterFactory.CreateFromLocale(System.String)">
+            <summary>
+            Create a locale from <paramref name="localeID"/>.
+            Then return the appropriate collator for the locale.
+            </summary>
+            <param name="localeID"></param>
+            <returns>The appropriate collator for the locale.</returns>
+        </member>
+        <member name="M:Lucene.Net.Collation.ICUCollationKeyFilterFactory.CreateFromRules(System.String,Lucene.Net.Analysis.Util.IResourceLoader)">
+            <summary>
+            Read custom rules from a file, and create a <see cref="T:ICU4N.Text.RuleBasedCollator"/>.
+            The file cannot support comments, as # might be in the rules!
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Collation.TokenAttributes.ICUCollatedTermAttribute">
+            <summary>
+            Extension of <see cref="T:Lucene.Net.Analysis.TokenAttributes.CharTermAttribute"/> that encodes the term
+            text as a binary Unicode collation key instead of as UTF-8 bytes.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Collation.TokenAttributes.ICUCollatedTermAttribute.#ctor(ICU4N.Text.Collator)">
+            <summary>
+            Create a new ICUCollatedTermAttribute
+            </summary>
+            <param name="collator">Collation key generator.</param>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter">
+            <summary>
+            Creates a formatted snippet from the top passages.
+            <para/>
+            The default implementation marks the query terms as bold, and places
+            ellipses between unconnected passages.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter.m_preTag">
+            <summary>text that will appear before highlighted terms</summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter.m_postTag">
+            <summary>text that will appear after highlighted terms</summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter.m_ellipsis">
+            <summary>text that will appear between two unconnected passages</summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter.m_escape">
+            <summary>true if we should escape for html</summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter.#ctor">
+            <summary>
+            Creates a new DefaultPassageFormatter with the default tags.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter.#ctor(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter"/> with custom tags.
+            </summary>
+            <param name="preTag">text which should appear before a highlighted term.</param>
+            <param name="postTag">text which should appear after a highlighted term.</param>
+            <param name="ellipsis">text which should be used to connect two unconnected passages.</param>
+            <param name="escape">true if text should be html-escaped</param>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.DefaultPassageFormatter.Append(System.Text.StringBuilder,System.String,System.Int32,System.Int32)">
+            <summary>
+            Appends original text to the response.
+            </summary>
+            <param name="dest">resulting text, possibly transformed or encoded</param>
+            <param name="content">original text content</param>
+            <param name="start">index of the first character in content</param>
+            <param name="end">index of the character following the last character in content</param>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.MultiTermHighlighting">
+            <summary>
+            Support for highlighting multiterm queries in PostingsHighlighter.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.MultiTermHighlighting.ExtractAutomata(Lucene.Net.Search.Query,System.String)">
+            <summary>
+            Extracts all <see cref="T:Lucene.Net.Search.MultiTermQuery"/>s for <paramref name="field"/>, and returns equivalent 
+            automata that will match terms.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.MultiTermHighlighting.GetDocsEnum(Lucene.Net.Analysis.TokenStream,Lucene.Net.Util.Automaton.CharacterRunAutomaton[])">
+            <summary>
+            Returns a "fake" <see cref="T:Lucene.Net.Index.DocsAndPositionsEnum"/> over the tokenstream, returning offsets where <paramref name="matchers"/>
+            matches tokens.
+            <para/>
+            This is solely used internally by <see cref="T:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter"/>: <b>DO NOT USE THIS METHOD!</b>
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.Passage">
+            <summary>
+            Represents a passage (typically a sentence of the document).
+            <para/>
+            A passage contains <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.NumMatches"/> highlights from the query,
+            and the offsets and query terms that correspond with each match.
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Search.PostingsHighlight.Passage.StartOffset">
+            <summary>
+            Gets the start index (inclusive) of the passage in the
+            original content: always &gt;= 0.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Search.PostingsHighlight.Passage.EndOffset">
+            <summary>
+            Gets the end index (exclusive) of the passage in the 
+             original content: always &gt;= <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.StartOffset"/>
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Search.PostingsHighlight.Passage.Score">
+            <summary>
+            Passage's score.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Search.PostingsHighlight.Passage.NumMatches">
+            <summary>
+            Number of term matches available in 
+            <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchStarts"/>, <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchEnds"/>,
+            <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchTerms"/>
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchStarts">
+            <summary>
+            Start offsets of the term matches, in increasing order.
+            <para/>
+            Only <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.NumMatches"/> are valid. Note that these
+            offsets are absolute (not relative to <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.StartOffset"/>).
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchEnds">
+            <summary>
+            End offsets of the term matches, corresponding with <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchStarts"/>. 
+            <para/>
+            Only <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.NumMatches"/> are valid. Note that its possible that an end offset 
+            could exceed beyond the bounds of the passage <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.EndOffset"/>, if the 
+            <see cref="T:Lucene.Net.Analysis.Analyzer"/> produced a term which spans a passage boundary.
+            </summary>
+        </member>
+        <member name="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchTerms">
+            <summary>
+            BytesRef (term text) of the matches, corresponding with <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.MatchStarts"/>.
+            <para/>
+            Only <see cref="P:Lucene.Net.Search.PostingsHighlight.Passage.NumMatches"/> are valid.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.PassageFormatter">
+            <summary>
+            Creates a formatted snippet from the top passages.
+            
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.PassageFormatter.Format(Lucene.Net.Search.PostingsHighlight.Passage[],System.String)">
+            <summary>
+            Formats the top <paramref name="passages"/> from <paramref name="content"/>
+            into a human-readable text snippet.
+            </summary>
+            <param name="passages">
+            top-N passages for the field. Note these are sorted in
+            the order that they appear in the document for convenience.
+            </param>
+            <param name="content">content for the field.</param>
+            <returns>
+            formatted highlight.  Note that for the
+            non-expert APIs in <see cref="T:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter"/> that
+            return <see cref="T:System.String"/>, the <see cref="M:System.Object.ToString"/> method on the <see cref="T:System.Object"/>
+            returned by this method is used to compute the string.
+            </returns>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.PassageScorer">
+            <summary>
+            Ranks passages found by <see cref="T:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter"/>.
+            <para/>
+            Each passage is scored as a miniature document within the document.
+            The final score is computed as <c>norm</c> * ∑ (<c>weight</c> * <c>tf</c>).
+            The default implementation is <c>norm</c> * BM25.
+            
+            @lucene.experimental
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.PassageScorer.k1">
+            <summary>BM25 k1 parameter, controls term frequency normalization</summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.PassageScorer.b">
+            <summary>BM25 b parameter, controls length normalization.</summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.PassageScorer.pivot">
+            <summary>A pivot used for length normalization.</summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.PassageScorer.#ctor">
+            <summary>
+            Creates <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageScorer"/> with these default values:
+            <list type="bullet">
+                <item><description><c>k1 = 1.2</c></description></item>
+                <item><description><c>b = 0.75</c></description></item>
+                <item><description><c>pivot = 87</c></description></item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.PassageScorer.#ctor(System.Single,System.Single,System.Single)">
+            <summary>
+            Creates <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageScorer"/> with specified scoring parameters
+            </summary>
+            <param name="k1">Controls non-linear term frequency normalization (saturation).</param>
+            <param name="b">Controls to what degree passage length normalizes tf values.</param>
+            <param name="pivot">Pivot value for length normalization (some rough idea of average sentence length in characters).</param>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.PassageScorer.Weight(System.Int32,System.Int32)">
+            <summary>
+            Computes term importance, given its in-document statistics.
+            </summary>
+            <param name="contentLength">length of document in characters</param>
+            <param name="totalTermFreq">number of time term occurs in document</param>
+            <returns>term importance</returns>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.PassageScorer.Tf(System.Int32,System.Int32)">
+            <summary>
+            Computes term weight, given the frequency within the passage
+            and the passage's length.
+            </summary>
+            <param name="freq">number of occurrences of within this passage</param>
+            <param name="passageLen">length of the passage in characters.</param>
+            <returns>term weight</returns>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.PassageScorer.Norm(System.Int32)">
+            <summary>
+            Normalize a passage according to its position in the document.
+            <para/>
+            Typically passages towards the beginning of the document are 
+            more useful for summarizing the contents.
+            <para/>
+            The default implementation is <c>1 + 1/log(pivot + passageStart)</c>
+            </summary>
+            <param name="passageStart">start offset of the passage</param>
+            <returns>a boost value multiplied into the passage's core.</returns>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter">
+            <summary>
+            Simple highlighter that does not analyze fields nor use
+            term vectors. Instead it requires 
+            <see cref="F:Lucene.Net.Index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS"/>.
+            </summary>
+            <remarks>
+            PostingsHighlighter treats the single original document as the whole corpus, and then scores individual
+            passages as if they were documents in this corpus. It uses a <see cref="T:ICU4N.Text.BreakIterator"/> to find 
+            passages in the text; by default it breaks using <see cref="M:ICU4N.Text.BreakIterator.GetSentenceInstance(System.Globalization.CultureInfo)"/> (for sentence breaking). 
+            It then iterates in parallel (merge sorting by offset) through
+            the positions of all terms from the query, coalescing those hits that occur in a single passage
+            into a <see cref="T:Lucene.Net.Search.PostingsHighlight.Passage"/>, and then scores each Passage using a separate <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageScorer"/>.
+            Passages are finally formatted into highlighted snippets with a <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageFormatter"/>.
+            <para/>
+            You can customize the behavior by subclassing this highlighter, some important hooks:
+            <list type="bullet">
+                <item><description><see cref="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetBreakIterator(System.String)"/>: Customize how the text is divided into passages.</description></item>
+                <item><description><see cref="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetScorer(System.String)"/>: Customize how passages are ranked.</description></item>
+                <item><description><see cref="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetFormatter(System.String)"/>: Customize how snippets are formatted.</description></item>
+                <item><description><see cref="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetIndexAnalyzer(System.String)"/>: Enable highlighting of MultiTermQuerys such as <see cref="T:Lucene.Net.Search.WildcardQuery"/>.</description></item>
+            </list>
+            <para/>
+            <b>WARNING</b>: The code is very new and probably still has some exciting bugs!
+            <para/>
+            Example usage:
+            <code>
+                // configure field with offsets at index time
+                IndexableFieldType offsetsType = new IndexableFieldType(TextField.TYPE_STORED);
+                offsetsType.IndexOptions = IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS;
+                Field body = new Field("body", "foobar", offsetsType);
+                
+                // retrieve highlights at query time 
+                ICUPostingsHighlighter highlighter = new ICUPostingsHighlighter();
+                Query query = new TermQuery(new Term("body", "highlighting"));
+                TopDocs topDocs = searcher.Search(query, n);
+                string highlights[] = highlighter.Highlight("body", query, searcher, topDocs);
+            </code>
+            <para/>
+            This is thread-safe, and can be used across different readers.
+            <para/>
+            Note that the .NET implementation differs from the <c>PostingsHighlighter</c> in Lucene in
+            that it is backed by an ICU <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>, which differs slightly in default behavior
+            than the one in the JDK. However, the ICU <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/> behavior can be customized
+            to meet a lot of scenarios that the one in the JDK cannot. See the ICU documentation at
+            <a href="http://userguide.icu-project.org/boundaryanalysis/break-rules">http://userguide.icu-project.org/boundaryanalysis/break-rules</a>
+            for more information how to pass custom rules to an ICU <see cref="T:ICU4N.Text.RuleBasedBreakIterator"/>.
+            <para/>
+            @lucene.experimental
+            </remarks>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.EMPTY_INDEXREADER">
+            <summary>for rewriting: we don't want slow processing from MTQs</summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.DEFAULT_MAX_LENGTH">
+            <summary>
+            Default maximum content size to process. Typically snippets
+            closer to the beginning of the document better summarize its content
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.defaultFormatter">
+            <summary>
+            Set the first time <see cref="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetFormatter(System.String)"/> is called,
+            and then reused.
+            </summary>
+        </member>
+        <member name="F:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.defaultScorer">
+            <summary>
+            Set the first time <see cref="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetScorer(System.String)"/> is called, and then reused.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.#ctor">
+            <summary>
+            Creates a new highlighter with <see cref="F:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.DEFAULT_MAX_LENGTH"/>.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.#ctor(System.Int32)">
+            <summary>
+            Creates a new highlighter, specifying maximum content length.
+            </summary>
+            <param name="maxLength">maximum content size to process.</param>
+            <exception cref="T:System.ArgumentException">if <paramref name="maxLength"/> is negative or <c>int.MaxValue</c></exception>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetBreakIterator(System.String)">
+            <summary>
+            Returns the <see cref="T:ICU4N.Text.BreakIterator"/> to use for
+            dividing text into passages.  This instantiates an
+            <see cref="M:ICU4N.Text.BreakIterator.GetSentenceInstance(System.Globalization.CultureInfo)"/> by default;
+            subclasses can override to customize.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetFormatter(System.String)">
+            <summary>
+            Returns the <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageFormatter"/> to use for
+            formatting passages into highlighted snippets.  This
+            returns a new <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageFormatter"/> by default;
+            subclasses can override to customize.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetScorer(System.String)">
+            <summary>
+            Returns the <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageScorer"/> to use for
+            ranking passages.  This
+            returns a new <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageScorer"/> by default;
+            subclasses can override to customize.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.Highlight(System.String,Lucene.Net.Search.Query,Lucene.Net.Search.IndexSearcher,Lucene.Net.Search.TopDocs)">
+            <summary>
+            Highlights the top passages from a single field.
+            </summary>
+            <param name="field">field name to highlight. Must have a stored string value and also be indexed with offsets.</param>
+            <param name="query">query to highlight.</param>
+            <param name="searcher">searcher that was previously used to execute the query.</param>
+            <param name="topDocs">TopDocs containing the summary result documents to highlight.</param>
+            <returns>
+            Array of formatted snippets corresponding to the documents in <paramref name="topDocs"/>.
+            If no highlights were found for a document, the
+            first sentence for the field will be returned.
+            </returns>
+            <exception cref="T:System.IO.IOException">if an I/O error occurred during processing</exception>
+            <exception cref="T:System.ArgumentException">if <paramref name="field"/> was indexed without <see cref="F:Lucene.Net.Index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS"/></exception>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.Highlight(System.String,Lucene.Net.Search.Query,Lucene.Net.Search.IndexSearcher,Lucene.Net.Search.TopDocs,System.Int32)">
+            <summary>
+            Highlights the top-N passages from a single field.
+            </summary>
+            <param name="field">
+            field name to highlight.
+            Must have a stored string value and also be indexed with offsets.
+            </param>
+            <param name="query">query to highlight.</param>
+            <param name="searcher">searcher that was previously used to execute the query.</param>
+            <param name="topDocs">TopDocs containing the summary result documents to highlight.</param>
+            <param name="maxPassages">The maximum number of top-N ranked passages used to form the highlighted snippets.</param>
+            <returns>
+            Array of formatted snippets corresponding to the documents in <paramref name="topDocs"/>.
+            If no highlights were found for a document, the
+            first <paramref name="maxPassages"/> sentences from the
+            field will be returned.
+            </returns>
+            <exception cref="T:System.IO.IOException">if an I/O error occurred during processing</exception>
+            <exception cref="T:System.ArgumentException">Illegal if <paramref name="field"/> was indexed without <see cref="F:Lucene.Net.Index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS"/></exception>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.HighlightFields(System.String[],Lucene.Net.Search.Query,Lucene.Net.Search.IndexSearcher,Lucene.Net.Search.TopDocs)">
+            <summary>
+            Highlights the top passages from multiple fields.
+            <para/>
+            Conceptually, this behaves as a more efficient form of:
+            <code>
+            IDictionary&lt;string, string[]&gt; m = new Dictionary&lt;string, string[]&gt;();
+            foreach (string field in fields)
+            {
+                m[field] = Highlight(field, query, searcher, topDocs);
+            }
+            return m;
+            </code>
+            </summary>
+            <param name="fields">field names to highlight. Must have a stored string value and also be indexed with offsets.</param>
+            <param name="query">query to highlight.</param>
+            <param name="searcher">searcher that was previously used to execute the query.</param>
+            <param name="topDocs">TopDocs containing the summary result documents to highlight.</param>
+            <returns>
+            <see cref="T:IDictionary{string, string[]}"/> keyed on field name, containing the array of formatted snippets 
+            corresponding to the documents in <paramref name="topDocs"/>.
+            If no highlights were found for a document, the
+            first sentence from the field will be returned.
+            </returns>
+            <exception cref="T:System.IO.IOException">if an I/O error occurred during processing</exception>
+            <exception cref="T:System.ArgumentException">if <c>field</c> was indexed without <see cref="F:Lucene.Net.Index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS"/></exception>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.HighlightFields(System.String[],Lucene.Net.Search.Query,Lucene.Net.Search.IndexSearcher,Lucene.Net.Search.TopDocs,System.Int32[])">
+            <summary>
+            Highlights the top-N passages from multiple fields.
+            <para/>
+            Conceptually, this behaves as a more efficient form of:
+            <code>
+            IDictionary&lt;string, string[]&gt; m = new Dictionary&lt;string, string[]&gt;();
+            foreach (string field in fields)
+            {
+                m[field] = Highlight(field, query, searcher, topDocs, maxPassages);
+            }
+            return m;
+            </code>
+            </summary>
+            <param name="fields">field names to highlight. Must have a stored string value and also be indexed with offsets.</param>
+            <param name="query">query to highlight.</param>
+            <param name="searcher">searcher that was previously used to execute the query.</param>
+            <param name="topDocs">TopDocs containing the summary result documents to highlight.</param>
+            <param name="maxPassages">The maximum number of top-N ranked passages per-field used to form the highlighted snippets.</param>
+            <returns>
+            <see cref="T:IDictionary{string, string[]}"/> keyed on field name, containing the array of formatted snippets
+            corresponding to the documents in <paramref name="topDocs"/>.
+            If no highlights were found for a document, the
+            first <paramref name="maxPassages"/> sentences from the
+            field will be returned.
+            </returns>
+            <exception cref="T:System.IO.IOException">if an I/O error occurred during processing</exception>
+            <exception cref="T:System.ArgumentException">if <c>field</c> was indexed without <see cref="F:Lucene.Net.Index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS"/></exception>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.HighlightFields(System.String[],Lucene.Net.Search.Query,Lucene.Net.Search.IndexSearcher,System.Int32[],System.Int32[])">
+            <summary>
+            Highlights the top-N passages from multiple fields,
+            for the provided int[] docids.
+            </summary>
+            <param name="fieldsIn">field names to highlight. Must have a stored string value and also be indexed with offsets.</param>
+            <param name="query">query to highlight.</param>
+            <param name="searcher">searcher that was previously used to execute the query.</param>
+            <param name="docidsIn">containing the document IDs to highlight.</param>
+            <param name="maxPassagesIn">The maximum number of top-N ranked passages per-field used to form the highlighted snippets.</param>
+            <returns>
+            <see cref="F:IDictionary{string, string[]}"/> keyed on field name, containing the array of formatted snippets 
+            corresponding to the documents in <paramref name="docidsIn"/>.
+            If no highlights were found for a document, the
+            first <c>maxPassages</c> from the field will
+            be returned.
+            </returns>
+            <exception cref="T:System.IO.IOException">if an I/O error occurred during processing</exception>
+            <exception cref="T:System.ArgumentException">if <c>field</c> was indexed without <see cref="F:Lucene.Net.Index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS"/></exception>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.HighlightFieldsAsObjects(System.String[],Lucene.Net.Search.Query,Lucene.Net.Search.IndexSearcher,System.Int32[],System.Int32[])">
+            <summary>
+            Expert: highlights the top-N passages from multiple fields,
+            for the provided int[] docids, to custom object as
+            returned by the <see cref="T:Lucene.Net.Search.PostingsHighlight.PassageFormatter"/>.  Use
+            this API to render to something other than <see cref="T:System.String"/>.
+            </summary>
+            <param name="fieldsIn">field names to highlight. Must have a stored string value and also be indexed with offsets.</param>
+            <param name="query">query to highlight.</param>
+            <param name="searcher">searcher that was previously used to execute the query.</param>
+            <param name="docidsIn">containing the document IDs to highlight.</param>
+            <param name="maxPassagesIn">The maximum number of top-N ranked passages per-field used to form the highlighted snippets.</param>
+            <returns>
+            <see cref="T:IDictionary{string, object[]}"/> keyed on field name, containing the array of formatted snippets
+            corresponding to the documents in <paramref name="docidsIn"/>.
+            If no highlights were found for a document, the
+            first <paramref name="maxPassagesIn"/> from the field will
+            be returned.
+            </returns>
+            <exception cref="T:System.IO.IOException">if an I/O error occurred during processing</exception>
+            <exception cref="T:System.ArgumentException">if <c>field</c> was indexed without <see cref="F:Lucene.Net.Index.IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS"/></exception>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.LoadFieldValues(Lucene.Net.Search.IndexSearcher,System.String[],System.Int32[],System.Int32)">
+            <summary>
+            Loads the string values for each field X docID to be
+            highlighted.  By default this loads from stored
+            fields, but a subclass can change the source.  This
+            method should allocate the string[fields.length][docids.length]
+            and fill all values.  The returned strings must be
+            identical to what was indexed.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetMultiValuedSeparator(System.String)">
+            <summary>
+            Returns the logical separator between values for multi-valued fields.
+            The default value is a space character, which means passages can span across values,
+            but a subclass can override, for example with <c>U+2029 PARAGRAPH SEPARATOR (PS)</c>
+            if each value holds a discrete passage for highlighting.
+            </summary>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetIndexAnalyzer(System.String)">
+            <summary>
+            Returns the analyzer originally used to index the content for <paramref name="field"/>.
+            <para/>
+            This is used to highlight some <see cref="T:Lucene.Net.Search.MultiTermQuery"/>s.
+            </summary>
+            <param name="field"></param>
+            <returns><see cref="T:Lucene.Net.Analysis.Analyzer"/> or null (the default, meaning no special multi-term processing)</returns>
+        </member>
+        <member name="M:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.GetEmptyHighlight(System.String,ICU4N.Text.BreakIterator,System.Int32)">
+            <summary>
+            Called to summarize a document when no hits were
+            found.  By default this just returns the first
+            <paramref name="maxPassages"/> sentences; subclasses can override
+            to customize.
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.ICUPostingsHighlighter.DocsAndPositionsEnumAnonymousHelper">
+            <summary>
+            we rewrite against an empty indexreader: as we don't want things like
+            rangeQueries that don't summarize the document
+            </summary>
+        </member>
+        <member name="T:Lucene.Net.Search.PostingsHighlight.WholeBreakIterator">
+            <summary>Just produces one single fragment for the entire text</summary>
+        </member>
+        <member name="T:Lucene.Net.Search.VectorHighlight.BreakIteratorBoundaryScanner">
+            <summary>
+            A <see cref="T:Lucene.Net.Search.VectorHighlight.IBoundaryScanner"/> implementation that uses <see cref="T:ICU4N.Text.BreakIterator"/> to find
+            boundaries in the text.
+            </summary>
+            <seealso cref="T:ICU4N.Text.BreakIterator"/>
+        </member>
+    </members>
+</doc>

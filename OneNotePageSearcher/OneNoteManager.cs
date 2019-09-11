@@ -98,9 +98,7 @@ namespace OneNotePageSearcher
                 if (isDebug) Console.WriteLine("Deleting: " + id);
                 lucene.DeleteDocumentByID(id);
             }
-            isIndexing = true;
             AddIndexFromID(updateID, indexMode);
-            isIndexing = false;
             var currentTime = String.Format("{0:u}", DateTime.UtcNow);
             UserSettings.AddUpdateAppSettings("LastIndexTime", currentTime);
         }
@@ -125,13 +123,14 @@ namespace OneNotePageSearcher
         /// <param name="updateID">An iterable contains all paragraph id should be updated</param>
         private void AddIndexFromID(HashSet<String> updateID, string indexMode)
         {
+            isIndexing = true;
             totalCount = updateID.Count();
             if (totalCount == 0) progressRate = 1;
             else
             {
                 foreach (var id in updateID)
                 {
-                    if (isDebug) Console.WriteLine("Adding: " + id);
+                    //if (isDebug) Console.WriteLine("Adding: " + id);
                     lucene.DeleteDocumentByID(id);
                     count += 1;
                     progressRate = count / totalCount;
@@ -147,6 +146,7 @@ namespace OneNotePageSearcher
                     }
                 }
             }
+            isIndexing = false;
         }
 
         /// <summary>
@@ -372,6 +372,7 @@ namespace OneNotePageSearcher
 
                 return document.DocumentNode.InnerHtml;
             }
+            // Some text is unable to be parsed by htmlpack
             catch (ArgumentNullException)
             {
                 return data;
